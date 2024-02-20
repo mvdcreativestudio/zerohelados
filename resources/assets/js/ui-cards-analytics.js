@@ -1736,7 +1736,7 @@
         parentHeightOffset: 0,
         type: 'donut'
       },
-      labels: ['Incorrect address', 'Weather conditions', 'Federal Holidays', 'Damage during transit'],
+      labels: ['Pocitos', 'Punta Carretas', 'Carrasco', 'Tres Cruces'],
       series: [13, 25, 22, 40],
       colors: [
         chartColors.donut.series1,

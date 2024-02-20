@@ -299,7 +299,7 @@
         show: false
       },
       xaxis: {
-        categories: ['Jan', 'Apr', 'Jul', 'Oct'],
+        categories: ['Ene', 'Feb', 'Mar', 'Abr'],
         axisBorder: {
           show: false
         },
@@ -430,7 +430,7 @@
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic'],
         labels: {
           offsetX: 0,
           style: {
@@ -546,7 +546,7 @@
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
         labels: {
           show: true,
           style: {
@@ -700,7 +700,7 @@
       },
       xaxis: {
         show: false,
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
         labels: {
           show: false
         },
@@ -878,7 +878,7 @@
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
         axisBorder: {
           show: false
         },
