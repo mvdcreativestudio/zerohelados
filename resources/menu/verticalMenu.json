@@ -5,6 +5,12 @@
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard",
       "url": "/"
+    },
+    {
+      "name": "Materias Primas",
+      "icon": "menu-icon tf-icons bx bx-box",
+      "slug": "raw-materials",
+      "url": "/raw-materials"
     }
   ]
 }
