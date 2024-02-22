@@ -10,6 +10,6 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/', function () {
-        return view('content.dashboard.dashboard-mdv');
+        return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
 });
