@@ -46,10 +46,10 @@
               <select class="form-select" id="unit_of_measure" name="unit_of_measure" required>
                 <option value="">Seleccione una unidad</option>
                 <option value="KG" @if($rawMaterial->unit_of_measure == 'KG') selected @endif>Kilogramos (KG)</option>
-                <option value="Gramos" @if($rawMaterial->unit_of_measure == 'Gramos') selected @endif>Gramos</option>
-                <option value="Litros" @if($rawMaterial->unit_of_measure == 'Litros') selected @endif>Litros</option>
-                <option value="Mililitros" @if($rawMaterial->unit_of_measure == 'Mililitros') selected @endif>Mililitros (ml)</option>
-                <option value="Unidades" @if($rawMaterial->unit_of_measure == 'Unidades') selected @endif>Unidades</option>
+                <option value="Gramos" @if($rawMaterial->unit_of_measure == 'Gramos') selected @endif>Gramos (G)</option>
+                <option value="Litros" @if($rawMaterial->unit_of_measure == 'Litros') selected @endif>Litros (L)</option>
+                <option value="Mililitros" @if($rawMaterial->unit_of_measure == 'Mililitros') selected @endif>Mililitros (ML)</option>
+                <option value="Unidades" @if($rawMaterial->unit_of_measure == 'Unidades') selected @endif>Unidades (U)</option>
               </select>              
             </div>
 
@@ -60,7 +60,10 @@
                 <img src="{{ asset('storage/assets/img/raw_materials/' . $rawMaterial->image_url) }}" alt="Imagen actual" style="width: 100px; height: auto;">
               </div>
               <label class="form-label mt-3">Cambiar Imagen</label>
-              <input type="file" class="form-control" id="imageUpload" name="image" accept="image/*">
+              <input type="file" class="form-control" id="image_upload" name="image" accept="image/*">
+              <div class="mt-3">
+                <img id="image-preview" src="#" alt="Vista previa de la imagen" class="img-fluid" style="display: none;"/>
+              </div>
             </div>
           </div>
         </div>
