@@ -73,7 +73,7 @@
           <th>Diario Principal</th>
           <th>Cierre Febrero</th>
           <th>USD</th>
-          <th>1849</th>
+          <th>18490</th>
           <th><a href="entrie"><i class="bx bx-right-arrow-alt"></i></a></th>
         </tr>
       </tbody>
