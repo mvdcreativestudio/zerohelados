@@ -39,7 +39,7 @@ $(function () {
 
   if (dt_order_table.length) {
     var dt_products = dt_order_table.DataTable({
-      ajax: assetsPath + 'json/ecommerce-customer-order.json', // JSON file to add data
+      ajax: assetsPath + 'json/ecommerce-customer-order.json',
       columns: [
         // columns according to JSON
         { data: 'id' },
@@ -254,42 +254,7 @@ $(function () {
           className: 'btn btn-label-secondary dropdown-toggle',
           text: '<i class="bx bx-export me-1"></i>Export',
           buttons: [
-            {
-              extend: 'print',
-              text: '<i class="bx bx-printer me-2" ></i>Print',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [2, 3, 4, 5, 6, 7],
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('order-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              },
-              customize: function (win) {
-                // Customize print view for dark
-                $(win.document.body)
-                  .css('color', headingColor)
-                  .css('border-color', borderColor)
-                  .css('background-color', bodyBg);
-                $(win.document.body)
-                  .find('table')
-                  .addClass('compact')
-                  .css('color', 'inherit')
-                  .css('border-color', 'inherit')
-                  .css('background-color', 'inherit');
-              }
-            },
+            
             {
               extend: 'csv',
               text: '<i class="bx bx-file me-2" ></i>Csv',
@@ -385,39 +350,7 @@ $(function () {
           ]
         }
       ],
-      // For responsive popup
-      responsive: {
-        details: {
-          display: $.fn.dataTable.Responsive.display.modal({
-            header: function (row) {
-              var data = row.data();
-              return 'Details of ' + data['customer'];
-            }
-          }),
-          type: 'column',
-          renderer: function (api, rowIdx, columns) {
-            var data = $.map(columns, function (col, i) {
-              return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
-                ? '<tr data-dt-row="' +
-                    col.rowIndex +
-                    '" data-dt-column="' +
-                    col.columnIndex +
-                    '">' +
-                    '<td>' +
-                    col.title +
-                    ':' +
-                    '</td> ' +
-                    '<td>' +
-                    col.data +
-                    '</td>' +
-                    '</tr>'
-                : '';
-            }).join('');
 
-            return data ? $('<table class="table"/><tbody />').append(data) : false;
-          }
-        }
-      }
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
     $('.dt-action-buttons').addClass('pt-0');
