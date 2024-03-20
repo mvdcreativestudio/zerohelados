@@ -24,73 +24,77 @@
 
 @section('content')
 <h4 class="py-3 mb-4">
-  <span class="text-muted fw-light">eCommerce /</span> Order List
+  <span class="text-muted fw-light">E-Commerce /</span> Pedidos
 </h4>
 
-<!-- Order List Widget -->
-
-<div class="card mb-4">
-  <div class="card-widget-separator-wrapper">
-    <div class="card-body card-widget-separator">
-      <div class="row gy-4 gy-sm-1">
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
-            <div>
-              <h3 class="mb-2">56</h3>
-              <p class="mb-0">Pending Payment</p>
-            </div>
-            <div class="avatar me-sm-4">
-              <span class="avatar-initial rounded bg-label-secondary">
-                <i class="bx bx-calendar bx-sm"></i>
-              </span>
-            </div>
+<div class="row">
+  <div class="col-sm-6 col-lg-3 mb-4">
+    <div class="card card-border-shadow-primary h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2 pb-1">
+          <div class="avatar me-2">
+            <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-check"></i></span>
           </div>
-          <hr class="d-none d-sm-block d-lg-none me-4">
+          <h4 class="ms-1 mb-0">42</h4>
         </div>
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
-            <div>
-              <h3 class="mb-2">12,689</h3>
-              <p class="mb-0">Completed</p>
-            </div>
-            <div class="avatar me-lg-4">
-              <span class="avatar-initial rounded bg-label-secondary">
-                <i class="bx bx-check-double bx-sm"></i>
-              </span>
-            </div>
+        <p class="mb-1 fw-medium me-1">Pedidos completados</p>
+        <p class="mb-0">
+          <span class="fw-medium me-1 text-success">+18.2%</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3 mb-4">
+    <div class="card card-border-shadow-warning h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2 pb-1">
+          <div class="avatar me-2">
+            <span class="avatar-initial rounded bg-label-warning"><i class='bx bx-time'></i></span>
           </div>
-          <hr class="d-none d-sm-block d-lg-none">
+          <h4 class="ms-1 mb-0">8</h4>
         </div>
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
-            <div>
-              <h3 class="mb-2">124</h3>
-              <p class="mb-0">Refunded</p>
-            </div>
-            <div class="avatar me-sm-4">
-              <span class="avatar-initial rounded bg-label-secondary">
-                <i class="bx bx-wallet bx-sm"></i>
-              </span>
-            </div>
+        <p class="mb-1 fw-medium me-1">Pedidos pendientes</p>
+        <p class="mb-0">
+          <span class="fw-medium me-1 text-danger">-8.7%</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3 mb-4">
+    <div class="card card-border-shadow-danger h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2 pb-1">
+          <div class="avatar me-2">
+            <span class="avatar-initial rounded bg-label-danger"><i class='bx bx-error-circle'></i></span>
           </div>
+          <h4 class="ms-1 mb-0">2</h4>
         </div>
-        <div class="col-sm-6 col-lg-3">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h3 class="mb-2">32</h3>
-              <p class="mb-0">Failed</p>
-            </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-secondary">
-                <i class="bx bx-error-alt bx-sm"></i>
-              </span>
-            </div>
+        <p class="mb-1">Pedidos cancelados</p>
+        <p class="mb-0">
+          <span class="fw-medium me-1 text-success">+4.3%</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3 mb-4">
+    <div class="card card-border-shadow-info h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2 pb-1">
+          <div class="avatar me-2">
+            <span class="avatar-initial rounded bg-label-info"><i class='bx bx-line-chart'></i></span>
           </div>
+          <h4 class="ms-1 mb-0">$847</h4>
         </div>
+        <p class="mb-1">Ticket medio</p>
+        <p class="mb-0">
+          <span class="fw-medium me-1 text-danger">-2.5%</span>
+        </p>
       </div>
     </div>
   </div>
 </div>
+
+
 
 <!-- Order List Table -->
 <div class="card">
@@ -100,13 +104,13 @@
         <tr>
           <th></th>
           <th></th>
-          <th>order</th>
-          <th>date</th>
-          <th>customers</th>
-          <th>payment</th>
-          <th>status</th>
-          <th>method</th>
-          <th>actions</th>
+          <th>N°</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Pago</th>
+          <th>Estado</th>
+          <th>Met. de pago</th>
+          <th>Acciones</th>
         </tr>
       </thead>
     </table>

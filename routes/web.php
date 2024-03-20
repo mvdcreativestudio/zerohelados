@@ -20,7 +20,7 @@ Route::middleware([
         return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
 
-    Route::resource('raw-materials', RawMaterialController::class); // Genero automaticamente las rutas para el CRUD de Raw Materials
+    Route::resource('raw-materials', RawMaterialController::class);
 });
 
 // Omnicanalidad

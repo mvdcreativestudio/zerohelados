@@ -23,16 +23,16 @@ $(function () {
 
   var dt_order_table = $('.datatables-order'),
     statusObj = {
-      1: { title: 'Dispatched', class: 'bg-label-warning' },
-      2: { title: 'Delivered', class: 'bg-label-success' },
-      3: { title: 'Out for Delivery', class: 'bg-label-primary' },
-      4: { title: 'Ready to Pickup', class: 'bg-label-info' }
+      1: { title: 'Enviado', class: 'bg-label-warning' },
+      2: { title: 'Entregado', class: 'bg-label-success' },
+      3: { title: 'Listo para enviar', class: 'bg-label-primary' },
+      4: { title: 'Procesando', class: 'bg-label-info' }
     },
     paymentObj = {
-      1: { title: 'Paid', class: 'text-success' },
-      2: { title: 'Pending', class: 'text-warning' },
-      3: { title: 'Failed', class: 'text-danger' },
-      4: { title: 'Cancelled', class: 'text-secondary' }
+      1: { title: 'Pago', class: 'text-success' },
+      2: { title: 'Pendiente', class: 'text-warning' },
+      3: { title: 'Fallido', class: 'text-danger' },
+      4: { title: 'Cancelado', class: 'text-secondary' }
     };
 
   // E-commerce Products datatable
@@ -244,118 +244,16 @@ $(function () {
       language: {
         sLengthMenu: '_MENU_',
         search: '',
-        searchPlaceholder: 'Search Order',
-        info: 'Displaying _START_ to _END_ of _TOTAL_ entries'
+        searchPlaceholder: 'Buscar pedido',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ pedidos'
       },
-      // Buttons with Dropdown
-      buttons: [
-        {
-          extend: 'collection',
-          className: 'btn btn-label-secondary dropdown-toggle',
-          text: '<i class="bx bx-export me-1"></i>Export',
-          buttons: [
-            
-            {
-              extend: 'csv',
-              text: '<i class="bx bx-file me-2" ></i>Csv',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [2, 3, 4, 5, 6, 7],
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('order-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            },
-            {
-              extend: 'excel',
-              text: '<i class="bx bxs-file-export me-2"></i>Excel',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [2, 3, 4, 5, 6, 7],
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('order-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            },
-            {
-              extend: 'pdf',
-              text: '<i class="bx bxs-file-pdf me-2"></i>Pdf',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [2, 3, 4, 5, 6, 7],
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('order-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            },
-            {
-              extend: 'copy',
-              text: '<i class="bx bx-copy me-2" ></i>Copy',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [2, 3, 4, 5, 6, 7],
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('order-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ],
 
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
     $('.dt-action-buttons').addClass('pt-0');
-    // To remove default btn-secondary in export buttons
     $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
+    $('.dataTables_length label select').addClass('form-select form-select-sm');
+    $('.dataTables_filter label input').addClass('form-control');
   }
 
   // Delete Record
@@ -363,10 +261,4 @@ $(function () {
     dt_products.row($(this).parents('tr')).remove().draw();
   });
 
-  // Filter form control to default size
-  // ? setTimeout used for multilingual table initialization
-  setTimeout(() => {
-    $('.dataTables_filter .form-control').removeClass('form-control-sm');
-    $('.dataTables_length .form-select').removeClass('form-select-sm');
-  }, 300);
 });
