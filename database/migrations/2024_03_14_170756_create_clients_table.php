@@ -17,16 +17,14 @@ return new class extends Migration
             $table->enum('type', ['individual', 'company']);
             $table->string('rut');
             $table->string('ci');
-            $table->string('passport');
-            $table->string('doc_ext');
             $table->string('address');
             $table->string('city');
             $table->string('state');
             $table->string('country');
             $table->string('phone');
             $table->string('email');
-            $table->string('website');
-            $table->string('logo');
+            $table->string('website')->nullable();
+            $table->string('logo')->nullable();
             $table->timestamps();
         });
     }

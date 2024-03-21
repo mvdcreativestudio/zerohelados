@@ -8,6 +8,7 @@ use App\Http\Controllers\OmnichannelController;
 use App\Http\Controllers\CrmController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\ClientController;
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
@@ -19,9 +20,14 @@ Route::middleware([
     Route::get('/', function () {
         return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
+    Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
 
     Route::resource('raw-materials', RawMaterialController::class);
 });
+
+// Clients
+Route::resource('clients', ClientController::class);
+
 
 // Omnicanalidad
 Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnichannel');

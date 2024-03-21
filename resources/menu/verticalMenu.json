@@ -41,6 +41,12 @@
       ]
     },
     {
+      "name": "Clientes",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "slug": "clients",
+      "url": "/clients"
+    },
+    {
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
       "slug": ["orders", "products", "marketing", "settings"],
