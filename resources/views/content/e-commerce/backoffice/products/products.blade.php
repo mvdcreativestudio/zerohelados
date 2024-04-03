@@ -118,11 +118,10 @@
 <!-- Product List Table -->
 <div class="card">
   <div class="card-header">
-    <h5 class="card-title">Filter</h5>
-    <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
-      <div class="col-md-4 product_status"></div>
-      <div class="col-md-4 product_category"></div>
-      <div class="col-md-4 product_stock"></div>
+    <h5 class="card-title">Filtrar</h5>
+    <div class="d-flex justify-content-start align-items-center row py-3 gap-3 gap-md-0">
+      <div class="col-md-2 product_type"></div>
+      <div class="col-md-2 product_category"></div>
     </div>
   </div>
   <div class="card-datatable table-responsive">
@@ -130,16 +129,16 @@
       <thead>
         <tr>
           <th></th>
-          <th>nombre</th>
-          <th>sku</th>
-          <th>descripción</th>
-          <th>tipo</th>
-          <th>precio</th>
-          <th>precio rebajado</th>
-          <th>descuento</th>
-          <th>acciones</th>
+          <th>Nombre</th>
+          <th>SKU</th>
+          <th>Descripción</th>
+          <th>Tipo</th>
+          <th>Precio</th>
+          <th>Precio rebajado</th>
+          <th>Categoría</th>
+          <th>Acciones</th>
         </tr>
-      </thead>
+    </thead>
     </table>
   </div>
 </div>

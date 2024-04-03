@@ -6,10 +6,20 @@ use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\OrderRepository;
 use Log;
 
 class CheckoutController extends Controller
 {
+
+  protected $orderRepository;
+
+  public function __construct(OrderRepository $orderRepository)
+  {
+      $this->orderRepository = $orderRepository;
+  }
+
+
   public function index() {
     $cart = session('cart', []);
     $subtotal = 0;
@@ -30,9 +40,20 @@ class CheckoutController extends Controller
     return view('content.e-commerce.front.checkout', compact('cart', 'subtotal', 'costoEnvio', 'totalPedido', 'envioGratis'));
   }
 
+  public function success($orderId)
+  {
+      // Buscar la orden por su ID y cargar los productos relacionados
+      $order = Order::with(['products'])->findOrFail($orderId);
+      
+      // Pasar los datos de la orden a la vista, incluidos los productos
+      return view('content.e-commerce.front.checkout-success', compact('order'));
+  }
+
+
+
 
   public function store(Request $request)
-{
+  {
     // Validación de los datos recibidos
     $validatedData = $request->validate([
         'name' => 'required|max:255',
@@ -43,76 +64,51 @@ class CheckoutController extends Controller
         'payment_method' => 'required',
     ]);
 
-    DB::beginTransaction();
+    // Preparar datos del cliente
+    $clientData = [
+        'name' => $validatedData['name'],
+        'lastname' => $validatedData['lastname'],
+        'type' => 'individual',
+        'state' => 'Montevideo',
+        'country' => 'Uruguay',
+        'address' => $validatedData['address'],
+        'phone' => $validatedData['phone'],
+        'email' => $validatedData['email'],
+    ];
 
+    // Preparar datos de la orden, excluyendo los productos que se manejan en el repositorio
+    $subtotal = 0;
+    foreach (session('cart') as $item) {
+        $price = $item['price'] ?? $item['old_price'];
+        $subtotal += $price * $item['quantity'];
+    }
+    $costoEnvio = session('costoEnvio', 0);
+    $total = $subtotal + $costoEnvio;
+
+    $orderData = [
+        'date' => now(),
+        'origin' => 'ecommerce',
+        'store_id' => 1, // Asegúrate de que este ID es correcto para tu lógica de negocio
+        'subtotal' => $subtotal,
+        'tax' => 0, // Ajusta según sea necesario
+        'shipping' => $costoEnvio,
+        'total' => $total,
+        'payment_status' => 'pending',
+        'shipping_status' => 'pending',
+        'payment_method' => $validatedData['payment_method'],
+        'shipping_method' => 'peya', // Asegúrate de ajustar según tu lógica de negocio
+    ];
+
+    // Procesar la orden utilizando el repositorio
     try {
-        Log::info('Creando cliente...');
-        $client = Client::create([
-            'name' => $validatedData['name'],
-            'lastname' => $validatedData['lastname'],
-            'type' => 'individual',
-            'state' => 'Montevideo',
-            'country' => 'Uruguay',
-            'address' => $validatedData['address'],
-            'phone' => $validatedData['phone'],
-            'email' => $validatedData['email'],
-        ]);
-        Log::info('Cliente creado con éxito. ID: ' . $client->id);
-
-        // Calcular el total del carrito
-        $subtotal = 0;
-
-        foreach (session('cart') as $item) {
-            $price = $item['price'] != null ? $item['price'] : $item['old_price'];
-            $subtotal += $price * $item['quantity'];
-        }
-
-        // Calcular el total de la orden
-        $total = 0;
-
-        if (session('cart')['coupon']) {
-            $total = $subtotal - session('cart')['coupon']['discount_value'] + session('costoEnvio');
-        } else {
-            $total = $subtotal + session('costoEnvio');
-        }
-
-
-        $orderData = [
-            'date' => now(),
-            'origin' => 'ecommerce',
-            'client_id' => $client->id,
-            'store_id' => 1, // Asumiendo que este ID es correcto
-            'products' => json_encode(session('cart')),
-            'subtotal' => $subtotal,
-            'tax' => 0,
-            'shipping' => session('costoEnvio') ?? 0,
-            'coupon_id' => session('cart')['coupon']['id'] ?? null,
-            'coupon_amount' => session('cart')['coupon']['discount_value'] ?? null,
-            'discount' => 0,
-            'total' => $total,
-            'payment_status' => 'pending',
-            'shipping_status' => 'pending',
-            'payment_method' => $validatedData['payment_method'],
-            'shipping_method' => 'peya',
-        ];
-
-        Log::info('Intentando crear orden para el cliente ID: ' . $client->id);
-
-        $order = new Order($orderData);
-        $order->save();
-
-        Log::info('Orden creada con éxito. ID: ' . $order->id);
-
-        DB::commit();
-
-        session()->forget('cart');
-
-        return redirect()->route('checkout.success')->with('success', 'Pedido realizado con éxito.');
-    } catch (\Exception $e) {
-        DB::rollBack();
+        $order = $this->orderRepository->createOrder($clientData, $orderData, session('cart', []));
+        session()->forget('cart'); // Limpiar el carrito de compras
+        return redirect()->route('checkout.success', ['order' => $order->id]);
+      } catch (\Exception $e) {
         Log::error("Error al procesar el pedido: {$e->getMessage()} en {$e->getFile()}:{$e->getLine()}");
         return back()->withErrors('Error al procesar el pedido. Por favor, intente nuevamente.')->withInput();
     }
-}
+  }
+
 
 }

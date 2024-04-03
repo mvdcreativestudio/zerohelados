@@ -20,6 +20,7 @@
   color: white !important;
 }
 
+
 /* Spinner */
 
 .spinner-container {
@@ -58,6 +59,52 @@
 
 .custom-option-title {
   color: #181818 !important;
+}
+
+.quienes-somos-home {
+  background-color: #181818;
+  color: #181818;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0px 40px 0px;
+  background-image: url('/public/assets/img/front-pages/homepage/background-wall.jpeg');
+  background-size: cover;
+}
+
+.quienes-somos-container {
+  align-items: center;
+}
+
+.homepage-img-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.homepage-quienes-somos-img {
+  max-height: auto;
+  max-width: 600px;
+}
+
+.servicios-home {
+  background-color: #181818;
+  color: white;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/public/assets/img/front-pages/homepage/background-wall-dark.jpeg');
+  background-size: cover;
+}
+
+.servicios-container {
+  align-items: center;
+}
+
+.homepage-servicios-img {
+  width: auto;
+  height: 40vh;
 }
 
 /* Footer */
@@ -182,6 +229,10 @@
 
 /* Store */
 
+.store-category-title {
+  text-transform: uppercase;
+}
+
 .category-card-text {
   position: absolute;
   bottom: 10px;
@@ -236,5 +287,4 @@ tr.odd {
   padding: 0;
   margin: 0;
 }
-
 

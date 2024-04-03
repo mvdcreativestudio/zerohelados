@@ -1,26 +1,16 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\language\LanguageController;
+use App\Http\Controllers\{
+    LanguageController, RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
+    ClientController, AccountingController, StoreController, RoleController, SupplierController, SupplierOrderController,
+    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController
+};
 
-use App\Http\Controllers\RawMaterialController;
-use App\Http\Controllers\EcommerceController;
-use App\Http\Controllers\OmnichannelController;
-use App\Http\Controllers\CrmController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\AccountingController;
-use App\Http\Controllers\StoreController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\SupplierOrderController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
-
+// Cambio de Idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
+// Autenticación y Verificación de Email
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -29,78 +19,63 @@ Route::middleware([
     Route::get('/', function () {
         return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
+
+    // Dashboard Data Tables
     Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
     Route::get('/products/datatable', [ProductController::class, 'datatable'])->name('products.datatable');
     Route::get('/product-categories/datatable', [ProductCategoryController::class, 'datatable'])->name('product-categories.datatable');
+    Route::get('/orders/datatable', [OrderController::class, 'datatable'])->name('orders.datatable');
 
 
-    // Tiendas / Franquicias
-    Route::resource('stores', StoreController::class);
-    Route::get('stores/{store}/manage-users', [StoreController::class, 'manageUsers'])->name('stores.manageUsers');
-    Route::post('stores/{store}/associate-user', [StoreController::class, 'associateUser'])->name('stores.associateUser');
-    Route::post('stores/{store}/disassociate-user', [StoreController::class, 'disassociateUser'])->name('stores.disassociateUser');
+    // Recursos con acceso autenticado
+    Route::resources([
+        'stores' => StoreController::class,
+        'roles' => RoleController::class,
+        'raw-materials' => RawMaterialController::class,
+        'suppliers' => SupplierController::class,
+        'supplier-orders' => SupplierOrderController::class,
+        'clients' => ClientController::class,
+        'products' => ProductController::class,
+        'product-categories' => ProductCategoryController::class,
+        'orders' => OrderController::class,
+        'invoices' => InvoiceController::class,
+    ]);
+
+    // Stores
+    Route::prefix('stores/{store}')->name('stores.')->group(function () {
+        Route::get('manage-users', [StoreController::class, 'manageUsers'])->name('manageUsers');
+        Route::post('associate-user', [StoreController::class, 'associateUser'])->name('associateUser');
+        Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
+    });
 
     // Roles
-    Route::resource('roles', RoleController::class);
-    Route::get('roles/{role}/manage-users', [RoleController::class, 'manageUsers'])->name('roles.manageUsers');
-    Route::post('roles/{role}/associate-user', [RoleController::class, 'associateUser'])->name('roles.associateUser');
-    Route::post('roles/{role}/disassociate-user', [RoleController::class, 'disassociateUser'])->name('roles.disassociateUser');
-    Route::get('roles/{role}/manage-permissions', [RoleController::class, 'managePermissions'])->name('roles.managePermissions');
-    Route::post('roles/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assignPermissions');
+    Route::prefix('roles/{role}')->name('roles.')->group(function () {
+        Route::get('manage-users', [RoleController::class, 'manageUsers'])->name('manageUsers');
+        Route::post('associate-user', [RoleController::class, 'associateUser'])->name('associateUser');
+        Route::post('disassociate-user', [RoleController::class, 'disassociateUser'])->name('disassociateUser');
+        Route::get('manage-permissions', [RoleController::class, 'managePermissions'])->name('managePermissions');
+        Route::post('assign-permissions', [RoleController::class, 'assignPermissions'])->name('assignPermissions');
+    });
 
-
-    // Materias Primas
-    Route::resource('raw-materials', RawMaterialController::class);
-
-    // Proveedores
-    Route::resource('suppliers', SupplierController::class);
-
-    // Ordenes de Compra
-    Route::resource('supplier-orders', SupplierOrderController::class);
+    // CRM, Contabilidad y Otros
+    Route::get('crm', [CrmController::class, 'index'])->name('crm');
+    Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipts');
+    Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
+    Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
 });
 
-// Clients
-Route::resource('clients', ClientController::class);
-
-
-// Omnicanalidad
-Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnichannel');
-
-// E-Commerce
+// Rutas de E-Commerce (Públicas)
 Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
 Route::get('store', [EcommerceController::class, 'store'])->name('store');
-
-// Cart
+Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore');
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
-
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear');
-
-// Checkout
 Route::resource('checkout', CheckoutController::class);
+Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-
-// E-Commerce - Backoffice
-
-// E-Commerce - Products
-Route::resource('products', ProductController::class);
-
-// E-Commerce - Categories
-Route::resource('product-categories', ProductCategoryController::class);
-
-// E-Commerce - Orders
-Route::resource('orders', OrderController::class);
-
+// E-Commerce Backoffice
 Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
 Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
 
-// CRM
-Route::get('crm', [CrmController::class, 'index'])->name('crm');
-
-// Contabilidad
-Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipts');
-Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
-Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
-
-
- // Invoices
- Route::resource('invoices', InvoiceController::class);
+// Omnicanalidad (Público)
+Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnichannel');

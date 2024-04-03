@@ -26,7 +26,7 @@ $(function () {
 
   if (dt_product_table.length) {
     var dt_products = dt_product_table.DataTable({
-      ajax: 'products/datatable', // JSON file to add data
+      ajax: 'products/datatable',
       columns: [
         // columns according to JSON
         { data: 'image' },
@@ -43,30 +43,54 @@ $(function () {
         { data: 'type' },
         { data: 'old_price' },
         { data: 'price' },
-        { data: 'discount' },
+        { data: 'category' },
         { data: ''}
       ],
       columnDefs: [
         {
-          // Actions
-          targets: -1,
-          title: 'Acciones',
-          searchable: false,
-          orderable: false,
-          render: function (data, type, full, meta) {
-            return (
-              '<div class="d-inline-block text-nowrap">' +
-              '<button class="btn btn-sm btn-icon"><i class="bx bx-edit"></i></button>' +
-              '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
-              '<div class="dropdown-menu dropdown-menu-end m-0">' +
-              '<a href="javascript:0;" class="dropdown-item">View</a>' +
-              '<a href="javascript:0;" class="dropdown-item">Suspend</a>' +
-              '</div>' +
-              '</div>'
-            );
+            // Actions
+            targets: -1,
+            title: 'Acciones',
+            searchable: false,
+            orderable: false,
+            render: function (data, type, full, meta) {
+                return (
+                    '<div class="d-inline-block text-nowrap">' +
+                    '<button class="btn btn-sm btn-icon"><i class="bx bx-edit"></i></button>' +
+                    '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
+                    '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                    '<a href="javascript:0;" class="dropdown-item">View</a>' +
+                    '<a href="javascript:0;" class="dropdown-item">Suspend</a>' +
+                    '</div>' +
+                    '</div>'
+                );
+            }
+        },
+        {
+            targets: 0, // Assuming the 'image' column is the first one
+            title: 'Imagen',
+            render: function(data, type, full, meta) {
+                return '<img src="' + data + '" alt="Imagen del producto" style="max-width: 100px; max-height: 100px;">';
+            }
+        },
+        {
+            targets: 5, // Assuming 'old_price' is the 6th column (0-based index)
+            render: function(data, type, full, meta) {
+                return '$' + data;
+            }
+        },
+        {
+          targets: 6, // Assuming 'price' is the 7th column (0-based index)
+          render: function(data, type, full, meta) {
+              if (data !== null) {
+                  return '$' + data;
+              } else {
+                  return '';
+              }
           }
-        }
+        },
       ],
+
       order: [2, 'asc'], //set any columns order asc/desc
       dom:
         '<"card-header d-flex border-top rounded-0 flex-wrap py-md-0"' +
@@ -96,15 +120,15 @@ $(function () {
       ],
 
       initComplete: function () {
-        // Adding status filter once table initialized
+        // Adding type filter once table initialized
         this.api()
-          .columns(-2)
+          .columns(4) // Assuming 'tipo' column is at index 4
           .every(function () {
             var column = this;
             var select = $(
-              '<select id="ProductStatus" class="form-select text-capitalize"><option value="">Status</option></select>'
+              '<select id="ProductType" class="form-select text-capitalize"><option value="">Tipo</option></select>'
             )
-              .appendTo('.product_status')
+              .appendTo('.product_type')
               .on('change', function () {
                 var val = $.fn.dataTable.util.escapeRegex($(this).val());
                 column.search(val ? '^' + val + '$' : '', true, false).draw();
@@ -115,55 +139,31 @@ $(function () {
               .unique()
               .sort()
               .each(function (d, j) {
-                select.append('<option value="' + statusObj[d].title + '">' + statusObj[d].title + '</option>');
+                select.append('<option value="' + d + '">' + d + '</option>'); // Assuming 'tipo' column data directly represents the type
               });
           });
         // Adding category filter once table initialized
         this.api()
-          .columns(3)
+          .columns(-2)
           .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="ProductCategory" class="form-select text-capitalize"><option value="">Category</option></select>'
-            )
-              .appendTo('.product_category')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
+              var column = this;
+              var select = $('<select class="form-select text-capitalize"><option value="">Categoría</option></select>')
+                  .appendTo('.product_category')
+                  .on('change', function () {
+                      var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                      column.search(val ? '^' + val + '$' : '', true, false).draw();
+                  });
 
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append('<option value="' + categoryObj[d].title + '">' + categoryObj[d].title + '</option>');
-              });
+              column
+                  .data()
+                  .unique()
+                  .sort()
+                  .each(function (d, j) {
+                      select.append('<option value="' + d + '">' + d + '</option>');
+                  });
           });
-        // Adding stock filter once table initialized
-        this.api()
-          .columns(4)
-          .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="ProductStock" class="form-select text-capitalize"><option value=""> Stock </option></select>'
-            )
-              .appendTo('.product_stock')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
+    }
 
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append('<option value="' + stockObj[d].title + '">' + stockFilterValObj[d].title + '</option>');
-              });
-          });
-
-      }
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
     // To remove default btn-secondary in export buttons

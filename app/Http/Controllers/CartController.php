@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Coupon;
+use App\Models\Store;
 use Log;
 
 class CartController extends Controller
@@ -13,6 +14,21 @@ class CartController extends Controller
     {
         return view('content.e-commerce.front.cart');
     }
+
+    public function selectStore(Request $request)
+    {
+        $storeId = $request->input('storeId'); // Obtiene el ID de la tienda desde el cuerpo del formulario
+        $store = Store::find($storeId);
+
+        if (!$store) {
+            return redirect()->back()->with('error', 'La tienda no existe.');
+        }
+
+        session()->put('store', ['id' => $store->id, 'name' => $store->name, 'address' => $store->address]);
+        return redirect()->route('store');
+    }
+
+
 
     public function addToCart(Request $request, $productId)
     {
@@ -31,6 +47,7 @@ class CartController extends Controller
         } else {
             // Si el producto existe, acceder a sus propiedades es seguro
             $cart[$productId] = [
+                "id" => $product->id,
                 "name" => $product->name,
                 "sku" => $product->sku,
                 "description" => $product->description,

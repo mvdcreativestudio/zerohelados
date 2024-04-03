@@ -138,7 +138,7 @@ $configData = Helper::appClasses();
                     <li class="list-group-item p-4">
                       <div class="d-flex gap-3">
                         <div class="flex-shrink-0 d-flex align-items-center">
-                          <img src="{{ asset('assets/img/ecommerce-images/' . $details['image']) }}" alt="{{ $details['name'] }}" class="w-px-100">
+                          <img src="{{ asset($details['image']) }}" alt="{{ $details['name'] }}" class="w-px-100">
                         </div>
                         <div class="flex-grow-1">
                           <div class="row">

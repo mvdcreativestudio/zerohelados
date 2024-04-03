@@ -79,7 +79,7 @@
             <div class="form-control p-0 pt-1">
               <div class="comment-toolbar border-0 border-bottom">
                 <div class="d-flex justify-content-start">
-                  <span class="ql-formats me-0">
+                  <span class="ql-formats me-0">1
                     <button class="ql-bold"></button>
                     <button class="ql-italic"></button>
                     <button class="ql-underline"></button>
@@ -294,16 +294,14 @@
           <a href="javascript:void(0);" class="fw-medium">Agregar imagen desde URL</a>
         </div>
         <div class="card-body">
-          <form action="/upload" class="dropzone needsclick" id="dropzone-basic">
-            <div class="dz-message needsclick my-5">
-              <p class="fs-4 note needsclick my-2">Arrastre la imagen aquí</p>
-              <small class="text-muted d-block fs-6 my-2">o</small>
-              <span class="note needsclick btn bg-label-primary d-inline" id="btnBrowse">Buscar imagen</span>
-            </div>
-            <div class="fallback">
-              <input name="file" type="file" />
-            </div>
-          </form>
+          <div class="dz-message needsclick my-5">
+            <p class="fs-4 note needsclick my-2">Arrastre la imagen aquí</p>
+            <small class="text-muted d-block fs-6 my-2">o</small>
+            <span class="note needsclick btn bg-label-primary d-inline" id="btnBrowse">Buscar imagen</span>
+          </div>
+          <div class="fallback">
+            <input name="image" type="file" />
+          </div>
         </div>
       </div>
       <!-- /Media -->

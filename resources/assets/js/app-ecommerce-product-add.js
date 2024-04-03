@@ -5,6 +5,7 @@
 
 //Javascript to handle the e-commerce product add page
 
+
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
     const commentEditorElement = document.querySelector('.comment-editor');
@@ -37,9 +38,6 @@
   });
 
 
-  // previewTemplate: Updated Dropzone default previewTemplate
-
-  // ! Don't change it unless you really know what you are doing
 
   const previewTemplate = `<div class="dz-preview dz-file-preview">
 <div class="dz-details">
