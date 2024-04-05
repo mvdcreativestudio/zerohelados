@@ -44,6 +44,7 @@ $(function () {
         { data: 'old_price' },
         { data: 'price' },
         { data: 'category' },
+        { data: 'store_name'},
         { data: ''}
       ],
       columnDefs: [
@@ -74,21 +75,32 @@ $(function () {
             }
         },
         {
-            targets: 5, // Assuming 'old_price' is the 6th column (0-based index)
+            targets: 5,
             render: function(data, type, full, meta) {
                 return '$' + data;
             }
         },
         {
-          targets: 6, // Assuming 'price' is the 7th column (0-based index)
+          targets: 6,
           render: function(data, type, full, meta) {
               if (data !== null) {
                   return '$' + data;
               } else {
-                  return '';
+                  return '-';
               }
           }
         },
+        {
+          targets: 4, // Assuming 'type' is the 5th column (0-based index)
+          render: function(data, type, full, meta) {
+              if (data.toLowerCase() === 'configurable') {
+                  return 'Variable';
+              } else {
+                  return data.charAt(0).toUpperCase() + data.slice(1);
+              }
+          }
+        }
+
       ],
 
       order: [2, 'asc'], //set any columns order asc/desc
@@ -139,12 +151,12 @@ $(function () {
               .unique()
               .sort()
               .each(function (d, j) {
-                select.append('<option value="' + d + '">' + d + '</option>'); // Assuming 'tipo' column data directly represents the type
+                select.append('<option value="' + d + '">' + d + '</option>');
               });
           });
         // Adding category filter once table initialized
         this.api()
-          .columns(-2)
+          .columns(-3)
           .every(function () {
               var column = this;
               var select = $('<select class="form-select text-capitalize"><option value="">Categoría</option></select>')
@@ -162,6 +174,28 @@ $(function () {
                       select.append('<option value="' + d + '">' + d + '</option>');
                   });
           });
+          // Adding store filter once table initialized
+          this.api()
+          .columns(-2)
+          .every(function () {
+              var column = this;
+              var select = $(
+                  '<select id="ProductStore" class="form-select text-capitalize"><option value="">Local</option></select>'
+              )
+              .appendTo('.product_store')
+              .on('change', function () {
+                  var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                  column.search(val ? '^' + val + '$' : '', true, false).draw();
+              });
+
+              column
+              .data()
+              .unique()
+              .sort()
+              .each(function (d, j) {
+                  select.append('<option value="' + d + '">' + d + '</option>');
+              });
+          });
     }
 
     });
@@ -176,6 +210,12 @@ $(function () {
   // Delete Record
   $('.datatables-products tbody').on('click', '.delete-record', function () {
     dt_products.row($(this).parents('tr')).remove().draw();
+  });
+
+  // Toggle column visibility based on switches
+  $('.toggle-column').on('change', function() {
+    var column = dt_products.column($(this).data('column'));
+    column.visible(!column.visible());
   });
 
 

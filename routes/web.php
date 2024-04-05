@@ -57,25 +57,31 @@ Route::middleware([
         Route::post('assign-permissions', [RoleController::class, 'assignPermissions'])->name('assignPermissions');
     });
 
+    // Variaciones
+    Route::get('product-attributes', [ProductController::class, 'attributes'])->name('product-attributes');
+    Route::post('product-attributes', [ProductController::class, 'storeAttributes'])->name('product-attributes.store');
+
     // CRM, Contabilidad y Otros
     Route::get('crm', [CrmController::class, 'index'])->name('crm');
     Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipts');
     Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
     Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
+
+    // E-Commerce Backoffice
+    Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
+    Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
+
 });
 
 // Rutas de E-Commerce (Públicas)
 Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
-Route::get('store', [EcommerceController::class, 'store'])->name('store');
+Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store');
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore');
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear');
 Route::resource('checkout', CheckoutController::class);
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-// E-Commerce Backoffice
-Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
-Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
 
 // Omnicanalidad (Público)
 Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnichannel');

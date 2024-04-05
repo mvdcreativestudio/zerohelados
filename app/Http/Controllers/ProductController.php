@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Store;
 use App\Models\ProductCategory;
+use App\Models\Flavor;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
 
@@ -22,22 +23,21 @@ class ProductController extends Controller
   {
     $categories = ProductCategory::all();
     $stores = Store::all();
-    return view('content.e-commerce.backoffice.products.add-product', compact('stores', 'categories'));
+    $flavors = Flavor::all();
+    return view('content.e-commerce.backoffice.products.add-product', compact('stores', 'categories', 'flavors'));
   }
 
   public function store(Request $request)
-{
+  {
     $product = new Product();
     $product->name = $request->name;
     $product->sku = $request->sku;
     $product->description = $request->description;
     $product->type = $request->type;
+    $product->max_flavors = $request->max_flavors;
     $product->old_price = $request->old_price;
     $product->price = $request->price;
     $product->discount = $request->discount;
-    $product->tags = $request->tags;
-    $product->atributtes = $request->atributtes;
-    $product->variations = $request->variations;
     $product->store_id = $request->store_id;
     $product->status = $request->status;
     $product->stock = $request->stock;
@@ -73,6 +73,11 @@ class ProductController extends Controller
     // Sincroniza las categorías después de guardar el producto
     $product->categories()->sync($request->input('categories', []));
 
+    //Manejo de sabores
+    if ($request->filled('flavors')) {
+    $product->flavors()->sync($request->flavors);
+    }
+
     // Redireccionar al usuario a la lista de clientes con un mensaje de éxito
     return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
   }
@@ -80,12 +85,23 @@ class ProductController extends Controller
 
   public function datatable()
   {
-      $query = Product::with('categories:id,name')->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'tags', 'atributtes', 'variations', 'image', 'store_id', 'status', 'stock', 'draft']);
+      $query = Product::with(['categories:id,name', 'store:id,name']) // Cargar las relaciones 'categories' y 'store'
+                      ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft']);
 
       return DataTables::of($query)
           ->addColumn('category', function ($product) {
               return $product->categories->implode('name', ', ');
           })
+          ->addColumn('store_name', function ($product) {
+              return $product->store->name; // Acceder al nombre de la tienda a través de la relación 'store'
+          })
           ->make(true);
   }
+
+
+  public function attributes()
+  {
+    return view('content.e-commerce.backoffice.products.attributes');
+  }
+
 }

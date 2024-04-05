@@ -144,8 +144,12 @@ $configData = Helper::appClasses();
                           <div class="row">
                             <div class="col-md-8">
                               <p class=" mb-0"><a href="javascript:void(0)" class="text-body">{{ $details['name'] }}</a></p>
-                              @if ($details['type'] == 'configurable')
-                                <small class="mt-0">Tus sabores aquí</small>
+                              @if (!empty($details['flavors']))
+                              <small class="mt-0">
+                                @foreach($details['flavors'] as $flavor)
+                                  - {{ $flavor['name'] }}
+                                @endforeach
+                              </small>
                               @endif
                               <input type="number" class="form-control form-control-sm w-px-100 mt-2" value="{{ $details['quantity'] }}" min="1" max="5">
                             </div>

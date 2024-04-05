@@ -115,7 +115,19 @@
                     <option value="configurable">Variable</option>
                   </select>
                 </div>
+                <div id="flavorsQuantityContainer" class="mb-3 col-4">
+                  <label class="form-label" for="max-flavors">Sabores</label>
+                  <input type="text" class="form-control" id="max_flavors" placeholder="Cantidad máxima de sabores" name="max_flavors" aria-label="Cantidad máxima de sabores">
+                </div>
               </div>
+            </div>
+            <div id="flavorsContainer" class="mb-3 col-8">
+              <label class="form-label">Sabores disponibles</label>
+              <select class="select2 form-select variationOptions" multiple="multiple" name="flavors[]">
+                @foreach ($flavors as $flavor)
+                  <option value="{{ $flavor->id }}">{{ $flavor->name }}</option>
+                @endforeach
+              </select>
             </div>
           </div>
         </div>
@@ -279,11 +291,6 @@
               @endforeach
             </select>
 
-          </div>
-          <!-- Tags -->
-          <div class="mb-3">
-            <label for="ecommerce-product-tags" class="form-label mb-1">Etiquetas</label>
-            <input id="ecommerce-product-tags" class="form-control" name="ecommerce-product-tags" value="Normal,Standard,Premium" aria-label="Product Tags" />
           </div>
         </div>
       </div>

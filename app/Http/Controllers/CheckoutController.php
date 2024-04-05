@@ -42,13 +42,10 @@ class CheckoutController extends Controller
 
   public function success($orderId)
   {
-      // Buscar la orden por su ID y cargar los productos relacionados
-      $order = Order::with(['products'])->findOrFail($orderId);
-      
-      // Pasar los datos de la orden a la vista, incluidos los productos
+      // Cargar la orden con productos y sabores relacionados
+      $order = Order::with(['products.flavors'])->findOrFail($orderId);
       return view('content.e-commerce.front.checkout-success', compact('order'));
   }
-
 
 
 

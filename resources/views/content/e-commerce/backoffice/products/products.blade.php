@@ -115,14 +115,73 @@
   </div>
 </div>
 
+
+
 <!-- Product List Table -->
 <div class="card">
   <div class="card-header">
-    <h5 class="card-title">Filtrar</h5>
-    <div class="d-flex justify-content-start align-items-center row py-3 gap-3 gap-md-0">
-      <div class="col-md-2 product_type"></div>
-      <div class="col-md-2 product_category"></div>
+    <div class="d-flex col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <p class="text-muted small"><a href="" class="toggle-switches" data-bs-toggle="collapse" data-bs-target="#columnSwitches" aria-expanded="false" aria-controls="columnSwitches">Ver / Ocultar columnas de la tabla</a></p>
+      </div>
+
+      <div class="collapse" id="columnSwitches">
+        <div class="mt-0 d-flex flex-wrap">
+          <div class="mx-0">
+            <label class="switch switch-square">
+              <input type="checkbox" class="toggle-column switch-input" data-column="0" checked>
+              <span class="switch-toggle-slider">
+                <span class="switch-on"><i class="bx bx-check"></i></span>
+                <span class="switch-off"><i class="bx bx-x"></i></span>
+              </span>
+              <span class="switch-label">Imagen</span>
+            </label>
+          </div>
+          <div class="mx-3">
+            <label class="switch switch-square">
+              <input type="checkbox" class="toggle-column switch-input" data-column="1" checked>
+              <span class="switch-toggle-slider">
+                <span class="switch-on"><i class="bx bx-check"></i></span>
+                <span class="switch-off"><i class="bx bx-x"></i></span>
+              </span>
+              <span class="switch-label">Nombre</span>
+            </label>
+          </div>
+          <!-- Agrega los switches para las demás columnas aquí -->
+          <div class="mx-3">
+            <label class="switch switch-square">
+              <input type="checkbox" class="toggle-column switch-input" data-column="2" checked>
+              <span class="switch-toggle-slider">
+                <span class="switch-on"><i class="bx bx-check"></i></span>
+                <span class="switch-off"><i class="bx bx-x"></i></span>
+              </span>
+              <span class="switch-label">SKU</span>
+            </label>
+          </div>
+          <div class="mx-3">
+            <label class="switch switch-square">
+              <input type="checkbox" class="toggle-column switch-input" data-column="3" checked>
+              <span class="switch-toggle-slider">
+                <span class="switch-on"><i class="bx bx-check"></i></span>
+                <span class="switch-off"><i class="bx bx-x"></i></span>
+              </span>
+              <span class="switch-label">Descripción</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="d-flex justify-content-start align-items-center row py-3 gap-3 gap-md-0">
+        <div class="col-md-2 product_type"></div>
+        <div class="col-md-2 product_category"></div>
+        <div class="col-md-2 product_store"></div>
+      </div>
+
     </div>
+
+
+
   </div>
   <div class="card-datatable table-responsive">
     <table class="datatables-products table border-top" data-ajax-url="{{ route('products.datatable') }}">
@@ -136,9 +195,10 @@
           <th>Precio</th>
           <th>Precio rebajado</th>
           <th>Categoría</th>
+          <th>Local</th>
           <th>Acciones</th>
         </tr>
-    </thead>
+      </thead>
     </table>
   </div>
 </div>

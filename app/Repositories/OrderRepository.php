@@ -13,34 +13,48 @@ class OrderRepository
   // Crear una orden con los datos del cliente, la orden y el carrito
   public function createOrder(array $clientData, array $orderData, array $cart)
   {
-      DB::beginTransaction();
-      try {
-          // Buscar el cliente por email o crear uno nuevo si no existe
-          $client = Client::firstOrCreate(
-              ['email' => $clientData['email']],
-              $clientData
-          );
+    DB::beginTransaction();
+    try {
+        // Buscar el cliente por email o crear uno nuevo si no existe
+        $client = Client::firstOrCreate(['email' => $clientData['email']], $clientData);
 
-          // Crear la orden y asociarla con el cliente encontrado o creado
-          $order = new Order($orderData);
-          $order->client()->associate($client);
-          $order->save();
+        // Crear la orden y asociarla con el cliente encontrado o creado
+        $order = new Order($orderData);
+        $order->client()->associate($client);
+        $order->save();
 
-          // Asociar los productos a la orden
-          foreach ($cart as $item) {
-              $order->products()->attach($item['id'], [
-                  'quantity' => $item['quantity'],
-                  'price' => $item['price'] ?? $item['old_price'],
-              ]);
-          }
+        // Asociar los productos y sus sabores a la orden
+        foreach ($cart as $item) {
+            // Asociar producto a la orden
+            $pivotData = [
+                'quantity' => $item['quantity'],
+                'price' => $item['price'] ?? $item['old_price'],
+            ];
+            $order->products()->attach($item['id'], $pivotData);
 
-          DB::commit();
-          return $order;
-      } catch (\Exception $e) {
-          DB::rollBack();
-          throw $e;
-      }
+            // Obtener el ID del registro intermedio (order_product) recién creado
+            $orderProductId = DB::getPdo()->lastInsertId();
+
+            // Asociar los sabores de los productos, si existen
+            if (isset($item['flavors']) && !empty($item['flavors'])) {
+                foreach ($item['flavors'] as $flavor) {
+                    // Suponiendo que tienes un modelo OrderProductFlavor o similar
+                    DB::table('order_product_flavor')->insert([
+                        'order_product_id' => $orderProductId,
+                        'flavor_id' => $flavor['id']
+                    ]);
+                }
+            }
+        }
+
+        DB::commit();
+        return $order;
+    } catch (\Exception $e) {
+        DB::rollBack();
+        throw $e;
+    }
   }
+
 
   // Obtener datos para Datatable del dashboard
   public function getOrdersForDataTable()

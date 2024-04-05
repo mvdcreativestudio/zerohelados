@@ -164,5 +164,28 @@ document.addEventListener('DOMContentLoaded', function () {
           history.back();
       }
   });
+
+  $(document).ready(function() {
+    // Función para manejar la visibilidad del contenedor de sabores
+    function toggleFlavorsContainer() {
+      var productType = $('#productType').val();
+      if (productType === 'configurable') {
+        $('#flavorsContainer').show();
+        $('#flavorsQuantityContainer').show();
+      } else {
+        $('#flavorsContainer').hide();
+        $('#flavorsQuantityContainer').hide();
+      }
+    }
+
+    // Llamada inicial para establecer la visibilidad correcta al cargar la página
+    toggleFlavorsContainer();
+
+    // Controlador de eventos para cuando cambia la selección del tipo de producto
+    $('#productType').change(function() {
+      toggleFlavorsContainer();
+    });
+  });
+
 });
 
