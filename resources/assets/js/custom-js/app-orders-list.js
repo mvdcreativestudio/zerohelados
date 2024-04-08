@@ -131,11 +131,16 @@ $(function () {
         '>',
       lengthMenu: [10, 40, 60, 80, 100], //for length of menu
       language: {
+        searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
-        search: '',
-        searchPlaceholder: 'Buscar pedido',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ pedidos'
-      },
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ tiendas',
+        paginate: {
+          first: 'Primero',
+          last: 'Último',
+          next: '<span class="mx-2">Siguiente</span>',
+          previous: '<span class="mx-2">Anterior</span>'
+        },
+      } 
 
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');

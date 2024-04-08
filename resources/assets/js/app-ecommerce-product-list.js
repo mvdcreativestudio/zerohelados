@@ -115,10 +115,15 @@ $(function () {
         '>',
       lengthMenu: [7, 10, 20, 50, 70, 100], //for length of menu
       language: {
+        searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
-        search: '',
-        searchPlaceholder: 'Buscar producto',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ productos'
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ tiendas',
+        paginate: {
+          first: 'Primero',
+          last: 'Último',
+          next: '<span class="mx-2">Siguiente</span>',
+          previous: '<span class="mx-2">Anterior</span>'
+        },
       },
       // Buttons with Dropdown
       buttons: [

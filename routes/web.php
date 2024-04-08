@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     LanguageController, RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
     ClientController, AccountingController, StoreController, RoleController, SupplierController, SupplierOrderController,
-    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController
-};
+    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController};
 
 // Cambio de Idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
@@ -80,7 +79,12 @@ Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name(
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear');
 Route::resource('checkout', CheckoutController::class);
+Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/pending', [CheckoutController::class, 'pending'])->name('checkout.pending');
+Route::get('/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
 
 
 // Omnicanalidad (Público)

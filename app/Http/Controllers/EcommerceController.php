@@ -51,4 +51,18 @@ class EcommerceController extends Controller
         return view('content.e-commerce.backoffice.settings');
     }
 
+    public function success()
+    {
+        return view('content.e-commerce.front.success');
+    }
+
+    public function failure()
+    {
+        return view('content.e-commerce.front.failure');
+    }
+
+    public function pending()
+    {
+        return view('content.e-commerce.front.pending');
+    }
 }

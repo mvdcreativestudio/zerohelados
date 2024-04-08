@@ -202,7 +202,7 @@ Swal.fire({
 <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-      <form action="{{ route('cart.add', $product->id) }}" method="POST">
+      <form action="" method="POST" id="addToCartForm">
         @csrf
         <div class="modal-header">
           <h5 class="modal-title" id="modalCenterTitle">Product Name</h5>
@@ -229,11 +229,11 @@ Swal.fire({
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+
       var exampleModal = document.getElementById('modalCenter');
       exampleModal.addEventListener('show.bs.modal', function (event) {
           // Elemento que disparó el modal
           var button = event.relatedTarget;
-
           // Extracción de la información del atributo data-*
           var productName = button.getAttribute('data-name');
           var productImg = button.getAttribute('data-img');
@@ -243,13 +243,13 @@ Swal.fire({
           // Actualización de los contenidos del modal
           var modalTitle = exampleModal.querySelector('.modal-title');
           var modalImg = exampleModal.querySelector('.add-to-cart-img');
-          var form = exampleModal.querySelector('form');
+          var form = document.getElementById('addToCartForm');
 
           modalTitle.textContent = productName;
           modalImg.src = '../' + productImg;
 
-          // Asegúrate de que la URL se construye correctamente
-          form.action = '{{ url("cart/add") }}/' + productId;
+          // Actualiza el action del formulario con el ID del producto
+          form.action = '../cart/add/' + productId;
 
           // Limpia el contenedor de selectores de sabores existentes antes de añadir nuevos
           var flavorSelectorsContainer = exampleModal.querySelector('#flavorSelectors');

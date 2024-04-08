@@ -85,7 +85,7 @@ class ProductController extends Controller
 
   public function datatable()
   {
-      $query = Product::with(['categories:id,name', 'store:id,name']) // Cargar las relaciones 'categories' y 'store'
+      $query = Product::with(['categories:id,name', 'store:id,name'])
                       ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft']);
 
       return DataTables::of($query)

@@ -25,6 +25,8 @@ $configData = Helper::appClasses();
 @endsection
 
 
+
+
 @section('content')
 
 @if(session('success'))
@@ -106,7 +108,7 @@ $configData = Helper::appClasses();
             <div id="form-credit-card">
               <h4 class="mt-4 pt-2">Método de pago</h4>
                 <div class="row g-3">
-                  <div class="col-12">
+                  {{-- <div class="col-12">
                     <label class="form-label" for="billings-card-num">Número de tarjeta</label>
                     <div class="input-group input-group-merge">
                       <input type="text" id="billings-card-num" class="form-control billing-card-mask" placeholder="7465 8374 5837 5067" aria-describedby="paymentCard" />
@@ -125,7 +127,7 @@ $configData = Helper::appClasses();
                   <div class="col-md-3">
                     <label class="form-label" for="billings-card-cvv">CVV</label>
                     <input type="text" id="billings-card-cvv" class="form-control billing-cvv-mask" maxlength="3" placeholder="965" />
-                  </div>
+                  </div> --}}
                 </div>
             </div>
           </div>
@@ -212,6 +214,8 @@ $configData = Helper::appClasses();
     </form>
   </div>
 </section>
+
+
 
 <!-- Modal -->
 @include('_partials/_modals/modal-pricing')

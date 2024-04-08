@@ -25,8 +25,8 @@ class CartController extends Controller
           return redirect()->back()->with('error', 'La tienda no existe.');
       }
       session()->put('store', ['id' => $store->id, 'name' => $store->name, 'address' => $store->address]);
-      return redirect()->route('store');
-  }
+      return redirect()->route('store', ['storeId' => $store->id]);
+    }
 
 
   public function addToCart(Request $request, $productId)

@@ -30,4 +30,9 @@ class Store extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function mercadoPagoAccount()
+    {
+        return $this->hasOne(MercadoPagoAccount::class);
+    }
 }
