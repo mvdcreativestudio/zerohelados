@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
+
 class OrderProduct extends Pivot
 {
     // Especifica la tabla si no sigue la convención de nombres de Laravel
-    protected $table = 'order_product';
+    protected $table = 'order_products';
 
     // Si tu tabla pivot no utiliza las marcas de tiempo automáticas de Laravel, establece esto en false
     public $timestamps = true;

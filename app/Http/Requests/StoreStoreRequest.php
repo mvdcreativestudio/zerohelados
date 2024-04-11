@@ -32,7 +32,6 @@ class StoreStoreRequest extends FormRequest
             'email' => 'required|email|unique:stores,email',
             'rut' => 'required|string|max:255|unique:stores,rut',
             'status' => 'required|boolean',
-            // Asumiendo que envías un campo booleano para "permitir uso de MercadoPago"
             'accepts_mercadopago' => 'required|boolean',
         ];
 

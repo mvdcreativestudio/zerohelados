@@ -98,10 +98,45 @@ class ProductController extends Controller
           ->make(true);
   }
 
+  public function switchStatus()
+  {
+      $product = Product::findOrFail(request('id'));
+      if ($product->status == '1') {
+          $product->status = '2';
+      } else {
+          $product->status = '1';
+      }
+      $product->save();
+
+      return response()->json(['success' => true, 'message' => 'Estado del producto actualizado correctamente.']);
+  }
+
 
   public function attributes()
   {
     return view('content.e-commerce.backoffice.products.attributes');
   }
+
+  public function duplicate($id)
+  {
+      // Obtener el producto original
+      $originalProduct = Product::findOrFail($id);
+
+      // Crear un nuevo producto con los mismos datos
+      $newProduct = $originalProduct->replicate();
+      $newProduct->name = $originalProduct->name . ' (Copia)';
+      // Puedes modificar otros campos si es necesario
+
+      // Guardar el nuevo producto
+      $newProduct->save();
+
+      // Redirigir a la vista de creación con los datos del producto duplicado
+      return redirect()->route('products.create')->with('product', $newProduct);
+  }
+
+
+
+
+
 
 }

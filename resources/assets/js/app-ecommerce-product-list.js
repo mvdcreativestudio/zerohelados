@@ -45,10 +45,11 @@ $(function () {
         { data: 'price' },
         { data: 'category' },
         { data: 'store_name'},
+        { data: 'status' },
         { data: ''}
       ],
       columnDefs: [
-        {
+          {
             // Actions
             targets: -1,
             title: 'Acciones',
@@ -57,16 +58,31 @@ $(function () {
             render: function (data, type, full, meta) {
                 return (
                     '<div class="d-inline-block text-nowrap">' +
-                    '<button class="btn btn-sm btn-icon"><i class="bx bx-edit"></i></button>' +
+                    '<button class="btn btn-sm btn-icon edit-button" data-id="' + full['id'] + '"><i class="bx bx-edit"></i></button>' +
                     '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
                     '<div class="dropdown-menu dropdown-menu-end m-0">' +
-                    '<a href="javascript:0;" class="dropdown-item">View</a>' +
-                    '<a href="javascript:0;" class="dropdown-item">Suspend</a>' +
+                    '<a href="' + baseUrl + 'products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
+                    '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
                     '</div>' +
                     '</div>'
                 );
             }
         },
+
+        {
+          // Estado
+          targets: -2,
+          searchable: true,
+          orderable: true,
+          render: function (data, type, full, meta) {
+            if (data === 1) {  // Asumiendo que '1' representa 'Activo'
+              return '<span class="badge pill bg-success">Activo</span>';
+            } else {  // Asumiendo que cualquier otro caso es 'Inactivo'
+              return '<span class="badge pill bg-danger">Inactivo</span>';
+            }
+          }
+        },
+
         {
             targets: 0, // Assuming the 'image' column is the first one
             title: 'Imagen',
@@ -105,26 +121,32 @@ $(function () {
 
       order: [2, 'asc'], //set any columns order asc/desc
       dom:
-        '<"card-header d-flex border-top rounded-0 flex-wrap py-md-0"' +
-        '<"me-5 ms-n2 pe-5"f>' +
-        '<"d-flex justify-content-start justify-content-md-end align-items-baseline"<"dt-action-buttons d-flex align-items-start align-items-md-center justify-content-sm-center mb-3 mb-sm-0"lB>>' +
+        '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
         '>t' +
         '<"row mx-2"' +
         '<"col-sm-12 col-md-6"i>' +
         '<"col-sm-12 col-md-6"p>' +
         '>',
-      lengthMenu: [7, 10, 20, 50, 70, 100], //for length of menu
-      language: {
+        lengthMenu: [10, 25, 50, 100],
+        language: {
         searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ tiendas',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+        infoFiltered: "filtrados de _MAX_ productos",
+
         paginate: {
-          first: 'Primero',
-          last: 'Último',
-          next: '<span class="mx-2">Siguiente</span>',
-          previous: '<span class="mx-2">Anterior</span>'
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
         },
+        pagingType: "full_numbers",  // Use full numbers for pagination
+        dom: 'Bfrtip',
+        renderer: "bootstrap"
+
+
       },
+
       // Buttons with Dropdown
       buttons: [
         {
@@ -221,6 +243,40 @@ $(function () {
   $('.toggle-column').on('change', function() {
     var column = dt_products.column($(this).data('column'));
     column.visible(!column.visible());
+  });
+
+  // Handling click on the switch status button
+  dt_product_table.on('click', '.switch-status', function () {
+    var button = $(this);
+    var productId = button.data('id');
+    var newStatus = button.text().trim() === 'Activar' ? 1 : 2;  // Determine new status based on button text
+
+    $.ajax({
+      url: baseUrl + 'products/' + productId + '/switchStatus',
+      type: 'POST',
+      data: {
+        id: productId,
+        status: newStatus,
+        _token: $('meta[name="csrf-token"]').attr('content')  // CSRF token required by Laravel
+      },
+      success: function (response) {
+        Swal.fire({
+          title: '¡Correcto!',
+          text: response.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        dt_products.ajax.reload(null, false);  // Reload table data without resetting pagination
+      },
+      error: function (xhr, status, error) {
+        Swal.fire({
+          title: '¡Error!',
+          text: xhr.responseText,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
   });
 
 

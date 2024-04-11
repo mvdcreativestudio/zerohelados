@@ -12,7 +12,8 @@ class MercadoPagoAccount extends Model
         'store_id',
         'public_key',
         'access_token',
-    ]; // Los atributos que se pueden asignar en masa
+        'secret_key',
+    ];
 
     public function store()
     {

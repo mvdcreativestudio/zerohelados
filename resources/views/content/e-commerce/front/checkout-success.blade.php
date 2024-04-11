@@ -35,7 +35,7 @@ $configData = Helper::appClasses();
               </li>
               <li class="list-group-item flex-fill p-4 text-heading">
                 <h6 class="d-flex align-items-center gap-1"><i class="bx bxs-plane"></i> Método de envío</h6>
-                {{$order->shipping_method}}<br />
+                Pedidos Ya<br />
                 (Estimado 25 a 35 minutos)
               </li>
             </ul>
@@ -98,7 +98,7 @@ $configData = Helper::appClasses();
                 <dd class="col-6 text-end">${{$order->subtotal}}</dd>
 
                 <dt class="col-sm-6 fw-normal">Envío</dt>
-                <dd class="col-sm-6 text-end"><s class="text-muted">$5.00</s> <span class="badge bg-label-success ms-1">${{$order->shipping}}</span></dd>
+                <dd class="col-sm-6 text-end"><s class="text-muted">$90</s> <span class="badge bg-label-success ms-1">${{$order->shipping}}</span></dd>
               </dl>
               <hr class="mx-n4">
               <dl class="row mb-0">

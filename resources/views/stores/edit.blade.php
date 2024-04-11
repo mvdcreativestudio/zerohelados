@@ -88,6 +88,12 @@
                           <label class="form-label" for="mercadoPagoAccessToken">Access Token</label>
                           <input type="text" class="form-control" id="mercadoPagoAccessToken" name="mercadoPagoAccessToken" placeholder="Access Token de MercadoPago" value="{{ $store->mercadoPagoAccount->access_token ?? '' }}">
                       </div>
+
+                      <!-- Secret Key -->
+                      <div class="mb-3">
+                        <label class="form-label" for="mercadoPagoSecretKey">Clave Secreta</label>
+                        <input type="text" class="form-control" id="mercadoPagoSecreyKey" name="mercadoPagoSecretKey" placeholder="Clave secreta de MercadoPago" value="{{ $store->mercadoPagoAccount->secret_key ?? ''}}">
+                      </div>
                     </div>
 
 

@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'E-Commerce - Pedidos')
+@section('title', 'Pedidos')
 
 @section('vendor-style')
 @vite([
@@ -110,6 +110,8 @@
           <th>Cliente</th>
           <th>Local</th>
           <th>Importe</th>
+          <th>Pago</th>
+          <th>Envío</th>
           <th>Acciones</th>
         </tr>
       </thead>

@@ -30,7 +30,7 @@ class MercadoPagoService
         foreach ($preferenceData['items'] as $itemData) {
             $item = new Item();
             $item->title = $itemData['title'];
-            $item->description = 'descripción';
+            $item->description = 'descripcion';
             $item->quantity = $itemData['quantity'];
             $item->unit_price = $itemData['unit_price'];
             $items[] = $item->toArray();
@@ -43,11 +43,24 @@ class MercadoPagoService
           "failure" => "https://mvdcreativestudio.com",
           "pending" => "https://sumeria.com.uy"
       );
+          $preference->auto_return = "all";
+
+        // // Configurar las URLs de retorno
+        // $preference->notification_url = route('mercadopago.webhooks');
 
         // Guardar la preferencia
         $preference->save();
+        Log::info('Preference created:', $preference->toArray());
 
         return $preference;
     }
+
+    public function setCredentials($publicKey, $accessToken)
+  {
+    // Configurar el acceso a la API de MercadoPago con las credenciales de la tienda
+    SDK::setPublicKey($publicKey);
+    SDK::setAccessToken($accessToken);
+}
+
 
 }

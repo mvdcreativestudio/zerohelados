@@ -56,7 +56,7 @@ class StoreController extends Controller
     {
         // Primero, crea la tienda sin los datos de MercadoPago
         $storeData = $request->validated();
-        unset($storeData['mercadoPagoPublicKey'], $storeData['mercadoPagoAccessToken'], $storeData['accepts_mercadopago']);
+        unset($storeData['mercadoPagoPublicKey'], $storeData['mercadoPagoAccessToken'], $storeData['mercadoPagoSecretKey'], $storeData['accepts_mercadopago']);
         $store = $this->storeRepository->create($storeData);
 
         // Luego, si se ha indicado que la tienda acepta MercadoPago, crea la cuenta de MercadoPago asociada
@@ -65,6 +65,7 @@ class StoreController extends Controller
                 'store_id' => $store->id, // Asume que el método create del repositorio devuelve el modelo de tienda creado
                 'public_key' => $request->input('mercadoPagoPublicKey'),
                 'access_token' => $request->input('mercadoPagoAccessToken'),
+                'secret_key' => $request->input('mercadoPagoSecretKey'),
             ];
 
             // Asegúrate de tener un método para crear la cuenta de MercadoPago en el repositorio o en el modelo de la tienda
@@ -110,13 +111,14 @@ class StoreController extends Controller
     {
         // Actualizar datos generales de la tienda
         $storeData = $request->validated();
-        $this->storeRepository->update($store, Arr::except($storeData, ['mercadoPagoPublicKey', 'mercadoPagoAccessToken', 'accepts_mercadopago']));
+        $this->storeRepository->update($store, Arr::except($storeData, ['mercadoPagoPublicKey', 'mercadoPagoAccessToken', 'mercadoPagoSecretKey', 'accepts_mercadopago']));
 
         // Manejar activación/desactivación y actualización de datos de MercadoPago
         if ($request->boolean('accepts_mercadopago')) {
             $mercadoPagoData = [
                 'public_key' => $request->input('mercadoPagoPublicKey'),
                 'access_token' => $request->input('mercadoPagoAccessToken'),
+                'secret_key' => $request->input('mercadoPagoSecretKey'),
             ];
             // Crear o actualizar la cuenta MercadoPago
             $store->mercadoPagoAccount()->updateOrCreate(['store_id' => $store->id], $mercadoPagoData);

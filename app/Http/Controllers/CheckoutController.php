@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\OrderRepository;
 use App\Services\MercadoPagoService;
 use MercadoPago\SDK;
+use App\Models\MercadoPagoAccount;
+use App\Models\Store;
+use Illuminate\Support\Facades\Redirect;
+
 
 
 use Log;
@@ -65,87 +69,125 @@ class CheckoutController extends Controller
 
   public function store(Request $request)
 {
-    // Validación de los datos recibidos
-    $validatedData = $request->validate([
-        'name' => 'required|max:255',
-        'lastname' => 'required|max:255',
-        'address' => 'required',
-        'phone' => 'required',
-        'email' => 'required|email',
-        'payment_method' => 'required',
-    ]);
-
-    // Preparar datos del cliente
-    $clientData = [
-        'name' => $validatedData['name'],
-        'lastname' => $validatedData['lastname'],
-        'type' => 'individual',
-        'state' => 'Montevideo',
-        'city' => 'Montevideo',
-        'country' => 'Uruguay',
-        'address' => $validatedData['address'],
-        'phone' => $validatedData['phone'],
-        'email' => $validatedData['email'],
-    ];
-
-    // Preparar datos de la orden, excluyendo los productos que se manejan en el repositorio
-    $subtotal = 0;
-    foreach (session('cart') as $item) {
-        $price = $item['price'] ?? $item['old_price'];
-        $subtotal += $price * $item['quantity'];
-    }
-    $costoEnvio = session('costoEnvio', 60); // Costo de envío predeterminado si no se ha establecido en la sesión
-    $total = $subtotal + $costoEnvio;
-
-    $orderData = [
-        'date' => now(),
-        'origin' => 'ecommerce',
-        'store_id' => 1, // Asegúrate de que este ID es correcto para tu lógica de negocio
-        'subtotal' => $subtotal,
-        'tax' => 0, // Ajusta según sea necesario
-        'shipping' => $costoEnvio,
-        'total' => $total,
-        'payment_status' => 'pending',
-        'shipping_status' => 'pending',
-        'payment_method' => $validatedData['payment_method'],
-        'shipping_method' => 'peya', // Asegúrate de ajustar según tu lógica de negocio
-    ];
-
     try {
-        DB::beginTransaction();
-        $order = $this->orderRepository->createOrder($clientData, $orderData, session('cart', []));
+        // Obtener el ID de la tienda de la sesión
+        $storeId = session('store.id');
 
-        // Crear preferencia de pago en MercadoPago
-        $items = array_map(function ($item) {
-            return [
-                'title' => $item['name'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['price'] ?? $item['old_price'],
-            ];
-        }, session('cart', []));
+        // Validación de los datos recibidos
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'address' => 'required',
+            'phone' => 'required',
+            'email' => 'required|email',
+            'payment_method' => 'required',
+        ]);
 
-        $preferenceData = [
-            'items' => $items,
-            'payer' => ['email' => $clientData['email']],
-            // Puedes agregar más configuraciones a la preferencia según necesites
+        // Preparar datos del cliente
+        $clientData = [
+            'name' => $validatedData['name'],
+            'lastname' => $validatedData['lastname'],
+            'type' => 'individual',
+            'state' => 'Montevideo',
+            'city' => 'Montevideo',
+            'country' => 'Uruguay',
+            'address' => $validatedData['address'],
+            'phone' => $validatedData['phone'],
+            'email' => $validatedData['email'],
         ];
 
-        // Crear la preferencia de pago utilizando el servicio de MercadoPago
-        $preference = $this->mercadoPagoService->createPreference($preferenceData, $order);
+        // Preparar datos de la orden
+        $subtotal = 0;
+        $cartItems = session('cart', []);
+        if (!is_array($cartItems)) {
+            $cartItems = [];
+        }
 
-        // Obtener el ID de la preferencia creada
-        $preferenceId = $preference->id;
+        foreach ($cartItems as $item) {
+            $price = $item['price'] ?? $item['old_price'];
+            $subtotal += $price * ($item['quantity'] ?? 1);
+        }
 
-        // Asociar el ID de la preferencia a la orden
-        $order->preference_id = $preferenceId;
-        $order->save();
+        $costoEnvio = session('costoEnvio', 60); // Costo de envío predeterminado si no se ha establecido en la sesión
+        $total = $subtotal + $costoEnvio;
 
-        DB::commit();
-        session()->forget('cart'); // Limpiar el carrito de compras
+        $orderData = [
+            'date' => now(),
+            'time' => now()->format('H:i:s'),
+            'origin' => 'ecommerce',
+            'store_id' => $storeId,
+            'subtotal' => $subtotal,
+            'tax' => 0,
+            'shipping' => $costoEnvio,
+            'total' => $total,
+            'payment_status' => 'pending',
+            'shipping_status' => 'pending',
+            'payment_method' => $validatedData['payment_method'],
+            'shipping_method' => 'peya',
+        ];
 
-        // Redireccionar a la página de pago con el ID de la orden
-        return redirect()->route('checkout.payment', $order->id);
+        Log::info('Datos validados y preparados para la orden y el cliente:', [
+            'client_data' => $clientData,
+            'order_data' => $orderData
+        ]);
 
+        DB::beginTransaction();
+        $order = $this->orderRepository->createOrder($clientData, $orderData, $cartItems);
+
+        Log::info('Orden creada:', $order->toArray());
+
+        if ($validatedData['payment_method'] === 'card') {
+            // Lógica para MercadoPago
+            $items = array_map(function ($item) {
+                return [
+                    'title' => $item['name'],
+                    'quantity' => $item['quantity'] ?? 1,
+                    'unit_price' => $item['price'] ?? $item['old_price'],
+                ];
+            }, $cartItems);
+
+            // Obtener las credenciales de MercadoPago de la tienda
+            $mercadoPagoAccount = MercadoPagoAccount::where('store_id', $storeId)->first();
+
+            if (!$mercadoPagoAccount) {
+                throw new \Exception('No se encontraron las credenciales de MercadoPago para la tienda asociada al pedido.');
+            }
+
+            Log::info('Credenciales de MercadoPago obtenidas:', $mercadoPagoAccount->toArray());
+
+            // Configurar el SDK de MercadoPago con las credenciales de la tienda
+            $this->mercadoPagoService->setCredentials($mercadoPagoAccount->public_key, $mercadoPagoAccount->access_token);
+
+            $preferenceData = [
+                'items' => $items,
+                'payer' => ['email' => $clientData['email']],
+            ];
+
+            Log::info('Creando preferencia de pago con los siguientes datos:', $preferenceData);
+
+            $preference = $this->mercadoPagoService->createPreference($preferenceData, $order);
+            $preferenceId = $preference->id;
+            $order->preference_id = $preferenceId;
+            $order->save();
+
+            Log::info('Preferencia de pago creada:', $preference->toArray());
+
+            DB::commit();
+            session()->forget('cart'); // Limpiar el carrito de compras
+
+            // Redirigir al usuario a la página de pago de MercadoPago
+            $redirectUrl = "https://www.mercadopago.com.uy/checkout/v1/payment/redirect/?preference-id=$preferenceId";
+            return Redirect::away($redirectUrl);
+        } else {
+            // Lógica para pago en efectivo
+            DB::commit();
+            session()->forget('cart'); // Limpiar el carrito de compras
+
+            Log::info('Pedido procesado correctamente.');
+
+            // Redirigir al usuario a la página de éxito
+            return redirect()->route('checkout.success', $order->id);
+        }
     } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error al procesar el pedido: {$e->getMessage()} en {$e->getFile()}:{$e->getLine()}");
@@ -153,30 +195,6 @@ class CheckoutController extends Controller
     }
 }
 
-public function payment($orderId)
-{
-    // Obtener la orden para obtener la información necesaria
-    $order = Order::findOrFail($orderId);
-
-    // Verificar si la orden tiene un estado válido para procesar el pago
-    if ($order->payment_status !== 'pending') {
-        Log::error("La orden (ID: {$order->id}) no está pendiente de pago.");
-        return redirect()->route('checkout.index')->with('error', 'La orden no está pendiente de pago.');
-    }
-
-    // Obtener la preferencia de pago asociada a la orden
-    $preferenceId = $order->preference_id;
-
-    // Verificar si la preferencia de pago existe
-    if (!$preferenceId) {
-        Log::error("No se encontró una preferencia de pago asociada a la orden (ID: {$order->id}).");
-        return redirect()->route('checkout.index')->with('error', 'No se encontró una preferencia de pago asociada a la orden.');
-    }
-
-    // Pasar la información necesaria a la vista de pago
-    Log::info("Redirigiendo al usuario al pago de la orden (ID: {$order->id}). Preferencia de pago: {$preferenceId}");
-    return view('content.e-commerce.front.checkout-payment', compact('order', 'preferenceId'));
-}
 
 
 

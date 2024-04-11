@@ -56,11 +56,12 @@ $configData = Helper::appClasses();
 <script>
   // Obtener el ID de la preferencia del backend
   const preferenceId = "{{ $preferenceId }}";
+  const publicKey = "{{ $publicKey }}";
 
   // Verificar si se recibió un ID de preferencia válido
   if (preferenceId) {
       // Si hay un ID de preferencia, inicializar el checkout con ese ID
-      const mp = new MercadoPago('TEST-58ec41eb-3aec-4d24-a610-8c0cf2e4e7e6');
+      const mp = new MercadoPago(publicKey);
 
       // Crear el botón de pago en el contenedor con id "wallet_container"
       mp.bricks().create("wallet", "wallet_container", {

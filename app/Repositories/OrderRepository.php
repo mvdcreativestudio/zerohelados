@@ -3,65 +3,48 @@
 namespace App\Repositories;
 
 use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Client;
-use App\Models\Store;
-use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 
 class OrderRepository
 {
-  // Crear una orden con los datos del cliente, la orden y el carrito
-  public function createOrder(array $clientData, array $orderData, array $cart)
-  {
-    DB::beginTransaction();
-    try {
-        // Buscar el cliente por email o crear uno nuevo si no existe
-        $client = Client::firstOrCreate(['email' => $clientData['email']], $clientData);
-
-        // Crear la orden y asociarla con el cliente encontrado o creado
-        $order = new Order($orderData);
-        $order->client()->associate($client);
-        $order->save();
-
-        // Asociar los productos y sus sabores a la orden
-        foreach ($cart as $item) {
-            // Asociar producto a la orden
-            $pivotData = [
-                'quantity' => $item['quantity'],
-                'price' => $item['price'] ?? $item['old_price'],
-            ];
-            $order->products()->attach($item['id'], $pivotData);
-
-            // Obtener el ID del registro intermedio (order_product) recién creado
-            $orderProductId = DB::getPdo()->lastInsertId();
-
-            // Asociar los sabores de los productos, si existen
-            if (isset($item['flavors']) && !empty($item['flavors'])) {
-                foreach ($item['flavors'] as $flavor) {
-                    // Suponiendo que tienes un modelo OrderProductFlavor o similar
-                    DB::table('order_product_flavor')->insert([
-                        'order_product_id' => $orderProductId,
-                        'flavor_id' => $flavor['id']
-                    ]);
-                }
-            }
-        }
-
-        DB::commit();
-        return $order;
-    } catch (\Exception $e) {
-        DB::rollBack();
-        throw $e;
+    public function getAllOrders()
+    {
+        return Order::all();
     }
-  }
 
+    public function createOrder(array $clientData, array $orderData, array $cart)
+    {
+        DB::beginTransaction();
+        try {
+            $client = Client::firstOrCreate(['email' => $clientData['email']], $clientData);
+            $order = new Order($orderData);
+            $order->client()->associate($client);
+            $order->save();
 
-  // Obtener datos para Datatable del dashboard
-  public function getOrdersForDataTable()
-  {
+            foreach ($cart as $item) {
+                $order->products()->attach($item['id'], [
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'] ?? $item['old_price'],
+                ]);
+            }
+
+            DB::commit();
+            return $order;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function getOrdersForDataTable()
+    {
       $query = Order::select([
                   'orders.id',
                   'orders.date',
+                  'orders.time',
                   'orders.client_id',
                   'orders.store_id',
                   'orders.subtotal',
@@ -85,8 +68,46 @@ class OrderRepository
 
 
       return DataTables::of($query)->make(true);
-  }
+    }
+
+    public function getOrderProductsForDataTable(Order $order)
+    {
+        $query = OrderProduct::where('order_id', $order->id)
+            ->with([
+                'product.categories:id,name',
+                'product.store:id,name',
+                'product.flavors:id,name'
+            ])
+            ->select(['id', 'product_id', 'quantity', 'price']);
+
+        return DataTables::of($query)
+            ->addColumn('product_name', function ($orderProduct) {
+                $productName = $orderProduct->product->name;
+                $flavors = $orderProduct->product->flavors->pluck('name')->implode(', ');
+                return $flavors ? $productName . "<br><small>$flavors</small>" : $productName;
+            })
+            ->addColumn('category', function ($orderProduct) {
+                return $orderProduct->product->categories->implode('name', ', ');
+            })
+            ->addColumn('store_name', function ($orderProduct) {
+                return $orderProduct->product->store->name;
+            })
+            ->addColumn('total_product', function ($orderProduct) {
+                return number_format($orderProduct->quantity * $orderProduct->price, 2);
+            })
+            ->rawColumns(['product_name'])  // Indica a DataTables que no escape HTML en la columna 'product_name'
+            ->make(true);
+    }
 
 
+    public function loadOrderRelations(Order $order)
+    {
+        return $order->load('client', 'products');
+    }
 
+    public function destroyOrder($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        $order->delete();
+    }
 }

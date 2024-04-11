@@ -3,17 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Order;
 use App\Repositories\OrderRepository;
-
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
+    protected $orderRepository;
+
+    public function __construct(OrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
 
     public function index()
     {
-        $orders = Order::all();
-        return view('content.e-commerce.backoffice.orders.orders', compact('orders'));
+        return view('content.e-commerce.backoffice.orders.orders', [
+            'orders' => $this->orderRepository->getAllOrders()
+        ]);
     }
 
     public function create()
@@ -23,7 +30,6 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-        // Validación de los datos recibidos
         $validatedData = $request->validate([
             'name' => 'required|max:255',
             'lastname' => 'required|max:255',
@@ -33,8 +39,48 @@ class OrderController extends Controller
             'payment_method' => 'required',
         ]);
 
-        // Preparar datos del cliente
-        $clientData = [
+        $clientData = $this->extractClientData($validatedData);
+        $orderData = $this->prepareOrderData($validatedData['payment_method']);
+
+        try {
+            $order = $this->orderRepository->createOrder($clientData, $orderData, session('cart', []));
+            session()->forget('cart');
+            return redirect()->route('checkout.index')->with('success', 'Pedido realizado con éxito. ID de orden: ' . $order->id);
+        } catch (\Exception $e) {
+            return back()->withErrors('Error al procesar el pedido. Por favor, intente nuevamente.')->withInput();
+        }
+    }
+
+    public function show(Order $order)
+    {
+        $order = $this->orderRepository->loadOrderRelations($order);
+        return view('content.e-commerce.backoffice.orders.show-order', compact('order'));
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $this->orderRepository->destroyOrder($id);
+            return response()->json(['success' => true, 'message' => 'Pedido eliminado correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al eliminar el pedido.'], 400);
+        }
+    }
+
+
+    public function datatable()
+    {
+        return $this->orderRepository->getOrdersForDataTable();
+    }
+
+    public function orderProductsDatatable(Order $order)
+    {
+        return $this->orderRepository->getOrderProductsForDataTable($order);
+    }
+
+    private function extractClientData($validatedData)
+    {
+        return [
             'name' => $validatedData['name'],
             'lastname' => $validatedData['lastname'],
             'type' => 'individual',
@@ -44,60 +90,27 @@ class OrderController extends Controller
             'phone' => $validatedData['phone'],
             'email' => $validatedData['email'],
         ];
+    }
 
-        // Preparar datos de la orden, excluyendo los productos que se manejan en el repositorio
-        $subtotal = 0;
-        foreach (session('cart') as $item) {
-            $price = $item['price'] ?? $item['old_price'];
-            $subtotal += $price * $item['quantity'];
-        }
-        $costoEnvio = session('costoEnvio', 0);
-        $total = $subtotal + $costoEnvio;
+    private function prepareOrderData($paymentMethod)
+    {
+        $subtotal = array_reduce(session('cart', []), function ($carry, $item) {
+            return $carry + ($item['price'] ?? $item['old_price']) * $item['quantity'];
+        }, 0);
 
-        $orderData = [
+        return [
             'date' => now(),
+            'time' => now()->format('H:i:s'),
             'origin' => 'ecommerce',
-            'store_id' => 1, // Asegúrate de que este ID es correcto para tu lógica de negocio
+            'store_id' => 1,
             'subtotal' => $subtotal,
-            'tax' => 0, // Ajusta según sea necesario
-            'shipping' => $costoEnvio,
-            'total' => $total,
+            'tax' => 0,
+            'shipping' => session('costoEnvio', 0),
+            'total' => $subtotal + session('costoEnvio', 0),
             'payment_status' => 'pending',
             'shipping_status' => 'pending',
-            'payment_method' => $validatedData['payment_method'],
-            'shipping_method' => 'peya', // Asegúrate de ajustar según tu lógica de negocio
+            'payment_method' => $paymentMethod,
+            'shipping_method' => 'peya',
         ];
-
-        // Procesar la orden utilizando el repositorio
-        try {
-            $order = $this->orderRepository->createOrder($clientData, $orderData, session('cart', []));
-            session()->forget('cart'); // Limpiar el carrito de compras
-            return redirect()->route('checkout.index')->with('success', 'Pedido realizado con éxito. ID de orden: ' . $order->id);
-        } catch (\Exception $e) {
-            Log::error("Error al procesar el pedido: {$e->getMessage()} en {$e->getFile()}:{$e->getLine()}");
-            return back()->withErrors('Error al procesar el pedido. Por favor, intente nuevamente.')->withInput();
-        }
     }
-
-
-    public function edit()
-    {
-        return view('orders.edit');
-    }
-
-
-    public function delete()
-    {
-        $order = Order::find(request('id'));
-        $order->delete();
-
-        return redirect('/orders');
-    }
-
-    // Método para obtener los datos de las órdenes para el DataTable
-    public function datatable(OrderRepository $orderRepo)
-    {
-      return $orderRepo->getOrdersForDataTable();
-    }
-
 }

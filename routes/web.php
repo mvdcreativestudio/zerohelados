@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\{
     LanguageController, RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
     ClientController, AccountingController, StoreController, RoleController, SupplierController, SupplierOrderController,
-    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController};
+    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController, MercadoPagoController};
 
 // Cambio de Idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
@@ -24,6 +26,7 @@ Route::middleware([
     Route::get('/products/datatable', [ProductController::class, 'datatable'])->name('products.datatable');
     Route::get('/product-categories/datatable', [ProductCategoryController::class, 'datatable'])->name('product-categories.datatable');
     Route::get('/orders/datatable', [OrderController::class, 'datatable'])->name('orders.datatable');
+    Route::get('/orders/{order}/datatable', [OrderController::class, 'orderProductsDatatable'])->name('order-products.datatable');
 
 
     // Recursos con acceso autenticado
@@ -39,6 +42,11 @@ Route::middleware([
         'orders' => OrderController::class,
         'invoices' => InvoiceController::class,
     ]);
+
+
+    // Products
+    Route::get('products/{id}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
+    Route::post('products/{id}/switchStatus', [ProductController::class, 'switchStatus'])->name('products.switchStatus');
 
     // Stores
     Route::prefix('stores/{store}')->name('stores.')->group(function () {
@@ -69,6 +77,9 @@ Route::middleware([
     // E-Commerce Backoffice
     Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
     Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
+    // Orders
+    Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
+
 
 });
 
@@ -82,10 +93,13 @@ Route::resource('checkout', CheckoutController::class);
 Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/pending', [CheckoutController::class, 'pending'])->name('checkout.pending');
 Route::get('/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
 
 
 // Omnicanalidad (Público)
 Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnichannel');
+
+// MercadoPago WebHooks
+Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');

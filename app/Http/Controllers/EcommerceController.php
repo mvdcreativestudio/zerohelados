@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Store;
 use App\Models\Flavor;
+use Illuminate\Support\Facades\Log;
 
 class EcommerceController extends Controller
 {
@@ -65,4 +66,6 @@ class EcommerceController extends Controller
     {
         return view('content.e-commerce.front.pending');
     }
+
+
 }

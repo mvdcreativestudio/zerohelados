@@ -19,11 +19,7 @@ $(function () {
     headingColor = config.colors.headingColor;
   }
 
-  // Variable declaration for table
-
   var dt_order_table = $('.datatables-order');
-
-  // E-commerce Products datatable
 
   if (dt_order_table.length) {
     var dt_products = dt_order_table.DataTable({
@@ -34,94 +30,79 @@ $(function () {
         { data: 'client_name' },
         { data: 'store_name' },
         { data: 'total' },
+        { data: 'payment_status'},
+        { data: 'shipping_status'},
         { data: '' }
       ],
       columnDefs: [
         {
-          // ID del pedido
           targets: 0,
           render: function (data, type, full, meta) {
-            return '#' + data;
+            return '<a href="' + baseUrl + 'orders/' + data + '/show" class="text-body">' + '#' + data + '</a>';
           }
         },
         {
-          // Fecha del pedido
           targets: 1,
           render: function (data, type, full, meta) {
-            return moment(data).locale('es').format('DD/MM/YY');
+            return moment(data).locale('es').format('DD/MM/YYYY');
           }
         },
         {
-          // Actions
           targets: -1,
           title: 'Acciones',
-          searchable: false,
           orderable: false,
+          searchable: false,
           render: function (data, type, full, meta) {
             return (
-              '<div class="d-flex justify-content-sm-center align-items-sm-center">' +
+              '<div class="d-flex justify-content-center align-items-center">' +
               '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></button>' +
               '<div class="dropdown-menu dropdown-menu-end m-0">' +
-              '<a href=" ' +
-              baseUrl +
-              'app/ecommerce/order/details" class="dropdown-item">Ver pedido</a>' +
-              '<a href="javascript:0;" class="dropdown-item delete-record">' +
-              'Eliminar' +
-              '</a>' +
+              '<a href="' + baseUrl + 'orders/' + full['id'] + '/show" class="dropdown-item">Ver pedido</a>' +
+              '<a href="javascript:void(0);" class="dropdown-item delete-record" data-id="' + full['id'] + '">Eliminar</a>' +
               '</div>' +
               '</div>'
             );
           }
         },
         {
-          // Información del cliente
-          targets: 2, // Ajusta este valor al índice correcto de tu columna "Cliente"
+          targets: 2,
           render: function (data, type, full, meta) {
             var $name = full['client_name'],
                 $email = full['client_email'],
-                $output;
+                $initials = $name.replace(/[^A-Z]/g, '').substring(0, 2),
+                stateNum = Math.floor(Math.random() * 6),
+                states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'],
+                $state = states[stateNum];
 
-          // Extraer la primera letra del nombre y la primera letra del apellido
-          var names = $name.split(' '),
-              $initials = '';
-          if (names.length > 1) {
-            $initials = names[0].charAt(0) + names[1].charAt(0); // Primera letra del nombre y apellido
-          } else {
-            $initials = names[0].charAt(0); // Solo hay un nombre, toma la primera letra
-          }
-          $initials = $initials.toUpperCase();
-
-          // Ajusta el color del avatar de manera aleatoria
-          var stateNum = Math.floor(Math.random() * 6);
-          var states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'];
-          var $state = states[stateNum];
-
-          // Genera el avatar con las iniciales
-          $output = '<span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span>';
-
-          // Crea el output completo para la fila
-          var $row_output =
-            '<div class="d-flex justify-content-start align-items-center">' +
-            '<div class="avatar-wrapper">' +
-            '<div class="avatar me-2">' + $output + '</div>' +
-            '</div>' +
-            '<div class="d-flex flex-column">' +
-            '<h6 class="m-0"><a href="javascript:void(0);" class="text-body">' + $name + '</a></h6>' +
-            '<small class="text-muted">' + $email + '</small>' +
-            '</div>' +
-            '</div>';
-          return $row_output;
+            return (
+              '<div class="d-flex justify-content-start align-items-center">' +
+              '<div class="avatar me-2"><span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span></div>' +
+              '<div class="d-flex flex-column">' +
+              '<a href="' + baseUrl + 'orders/' + full['id'] + '/show" class="text-body"><h6 class="mb-0">' + $name + '</h6></a>' +
+              '<small class="text-muted">' + $email + '</small>' +
+              '</div>' +
+              '</div>'
+            );
           }
         },
         {
-          // Total
-          targets: 4,
+          targets: 5,
           render: function (data, type, full, meta) {
-            return '$' + data;
+            let badgeClass = (data === 'pending') ? 'bg-warning' : (data === 'paid') ? 'bg-success' : 'bg-danger';
+            let text = (data === 'pending') ? 'PENDIENTE' : (data === 'paid') ? 'PAGO' : 'FALLIDO';
+            return '<span class="badge pill ' + badgeClass + '">' + text + '</span>';
           }
-        }
+        },
+        {
+          targets: 6,
+          render: function (data, type, full, meta) {
+            let badgeClass = (data === 'pending') ? 'bg-warning' : (data === 'shipped') ? 'bg-info' : 'bg-success';
+            let text = (data === 'pending') ? 'PENDIENTE' : (data === 'shipped') ? 'ENVIADO' : 'ENTREGADO';
+            return '<span class="badge pill ' + badgeClass + '">' + text + '</span>';
+          }
+        },
       ],
-      order: [3, 'asc'], //set any columns order asc/desc
+      order: [1, 'asc'],
       dom:
         '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
         '>t' +
@@ -129,30 +110,77 @@ $(function () {
         '<"col-sm-12 col-md-6"i>' +
         '<"col-sm-12 col-md-6"p>' +
         '>',
-      lengthMenu: [10, 40, 60, 80, 100], //for length of menu
-      language: {
+        lengthMenu: [10, 25, 50, 100],
+        language: {
         searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ tiendas',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+        infoFiltered: "filtrados de _MAX_ pedidos",
         paginate: {
-          first: 'Primero',
-          last: 'Último',
-          next: '<span class="mx-2">Siguiente</span>',
-          previous: '<span class="mx-2">Anterior</span>'
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
         },
-      } 
+        pagingType: "full_numbers",  // Use full numbers for pagination
+        dom: 'Bfrtip',
+        renderer: "bootstrap"
 
+
+      }
     });
-    $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
-    $('.dt-action-buttons').addClass('pt-0');
-    $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
+
+
+    // Estilos buscador y paginación
     $('.dataTables_length label select').addClass('form-select form-select-sm');
     $('.dataTables_filter label input').addClass('form-control');
+
+
+    $('.datatables-order tbody').on('click', '.delete-record', function () {
+      var recordId = $(this).data('id');
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción no se puede deshacer",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar!',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: baseUrl + 'orders/' + recordId,
+            type: 'DELETE',
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (result) {
+              if (result.success) {
+                Swal.fire(
+                  'Eliminado!',
+                  'El pedido ha sido eliminado.',
+                  'success'
+                );
+                dt_products.ajax.reload(null, false);  // Recarga la tabla sin resetear la paginación
+              } else {
+                Swal.fire(
+                  'Error!',
+                  'No se pudo eliminar el pedido. Intente de nuevo.',
+                  'error'
+                );
+              }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+              Swal.fire(
+                'Error!',
+                'No se pudo eliminar el pedido: ' + xhr.responseJSON.message,
+                'error'
+              );
+            }
+          });
+        }
+      });
+    });
   }
-
-  // Delete Record
-  $('.datatables-order tbody').on('click', '.delete-record', function () {
-    dt_products.row($(this).parents('tr')).remove().draw();
-  });
-
 });

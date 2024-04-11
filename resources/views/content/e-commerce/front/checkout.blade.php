@@ -4,7 +4,7 @@ $configData = Helper::appClasses();
 
 @extends('content.e-commerce.front.layouts.ecommerce-layout')
 
-@section('title', 'Payment - Front Pages')
+@section('title', 'Finalizar compra')
 
 <!-- Page Styles -->
 @section('page-style')
@@ -72,7 +72,7 @@ $configData = Helper::appClasses();
                   <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioPaypal">
                     <input name="payment_method" class="form-check-input" type="radio" value="efectivo" id="customRadioPaypal" />
                     <span class="custom-option-body">
-                      <img src="{{asset('assets/img/icons/payments/paypal-'.$configData['style'].'.png') }}" alt="paypal" width="58" data-app-light-img="icons/payments/paypal-light.png" data-app-dark-img="icons/payments/paypal-dark.png">
+                      <img src="{{asset('assets/img/icons/payments/cash.png') }}" alt="paypal" width="58">
                       <span class="ms-3">Efectivo</span>
                     </span>
                   </label>
@@ -108,7 +108,7 @@ $configData = Helper::appClasses();
             <div id="form-credit-card">
               <h4 class="mt-4 pt-2">Método de pago</h4>
                 <div class="row g-3">
-                  {{-- <div class="col-12">
+                  <div class="col-12">
                     <label class="form-label" for="billings-card-num">Número de tarjeta</label>
                     <div class="input-group input-group-merge">
                       <input type="text" id="billings-card-num" class="form-control billing-card-mask" placeholder="7465 8374 5837 5067" aria-describedby="paymentCard" />
@@ -127,7 +127,7 @@ $configData = Helper::appClasses();
                   <div class="col-md-3">
                     <label class="form-label" for="billings-card-cvv">CVV</label>
                     <input type="text" id="billings-card-cvv" class="form-control billing-cvv-mask" maxlength="3" placeholder="965" />
-                  </div> --}}
+                  </div>
                 </div>
             </div>
           </div>
