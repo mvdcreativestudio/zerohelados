@@ -83,6 +83,7 @@ Route::middleware([
 
 });
 
+
 // Rutas de E-Commerce (Públicas)
 Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
 Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store');

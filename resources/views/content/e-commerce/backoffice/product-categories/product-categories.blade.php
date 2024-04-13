@@ -82,7 +82,7 @@
         <!-- Image -->
         <div class="mb-3">
           <label class="form-label" for="ecommerce-category-image">Imagen</label>
-          <input class="form-control" type="file" id="ecommerce-category-image">
+          <input class="form-control" name="image" type="file" id="ecommerce-category-image">
         </div>
         <!-- Parent category -->
         <div class="mb-3 ecommerce-select2-dropdown">

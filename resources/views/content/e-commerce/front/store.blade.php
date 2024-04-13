@@ -55,33 +55,18 @@ Swal.fire({
 <div class="container vh-100">
 
 
-  <!-- Categories -->
-  <div class="row mt-4">
+<!-- Categories -->
+<div class="row mt-4">
+  @foreach ($categories as $category)
     <div class="card card-category col-md-3 col-6">
-      <img src="..\assets\img\ecommerce\Cat-1.png" alt="Helados">
+      <img src="{{ asset($category->image_url) }}">
       <div class="category-card-text">
-        <h5 class="category-name light">Helados</h5>
+        <h5 class="category-name light">{{ $category->name }}</h5>
       </div>
     </div>
-    <div class="card card-category col-md-3 col-6">
-      <img src="..\assets\img\ecommerce\Cat-2.png" alt="Helados">
-      <div class="category-card-text">
-        <h5 class="category-name light">Milkshakes</h5>
-      </div>
-    </div>
-    <div class="card card-category col-md-3 col-6">
-      <img src="..\assets\img\ecommerce\Cat-3.png" alt="Helados">
-      <div class="category-card-text">
-        <h5 class="category-name light">Paletas</h5>
-      </div>
-    </div>
-    <div class="card card-category col-md-3 col-6">
-      <img src="..\assets\img\ecommerce\Cat-4.png" alt="Helados">
-      <div class="category-card-text">
-        <h5 class="category-name light">Tortas</h5>
-      </div>
-    </div>
-  </div>
+  @endforeach
+</div>
+
 
   <!-- End Categories -->
 
