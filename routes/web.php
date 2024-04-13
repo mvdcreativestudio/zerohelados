@@ -94,6 +94,10 @@ Route::resource('checkout', CheckoutController::class);
 Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
+// Cupones de descuento
+Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon');
+
+
 Route::get('/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/pending', [CheckoutController::class, 'pending'])->name('checkout.pending');
 Route::get('/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');

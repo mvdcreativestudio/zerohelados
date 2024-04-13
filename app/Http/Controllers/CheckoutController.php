@@ -12,6 +12,7 @@ use MercadoPago\SDK;
 use App\Models\MercadoPagoAccount;
 use App\Models\Store;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Coupon;
 
 
 
@@ -32,7 +33,7 @@ class CheckoutController extends Controller
 
     public function index()
     {
-        $order = null; // Inicializamos $order como nulo, ya que aún no se ha creado una orden
+        $order = null;
         $cart = session('cart', []);
         $subtotal = 0;
         $costoEnvio = 60;
@@ -47,12 +48,13 @@ class CheckoutController extends Controller
             $costoEnvio = 0;
         }
 
-        $totalPedido = $subtotal + $costoEnvio;
+        $discount = session('coupon.discount', 0);
+        $totalPedido = ($subtotal - $discount) + $costoEnvio;
 
         $preferenceId = null;
 
         // Pasar el ID de la preferencia y otros datos a la vista
-        return view('content.e-commerce.front.checkout', compact('order', 'cart', 'subtotal', 'costoEnvio', 'totalPedido', 'envioGratis', 'preferenceId'));
+        return view('content.e-commerce.front.checkout', compact('order', 'cart', 'subtotal', 'costoEnvio', 'totalPedido', 'envioGratis', 'preferenceId', 'discount'));
     }
 
 
@@ -194,6 +196,63 @@ class CheckoutController extends Controller
         return back()->withErrors('Error al procesar el pedido. Por favor, intente nuevamente.')->withInput();
     }
 }
+
+public function applyCoupon(Request $request)
+{
+    try {
+        $request->validate([
+            'coupon_code' => 'required|string|exists:coupons,code',
+        ]);
+
+        Log::info('Applying coupon', ['coupon_code' => $request->coupon_code]);
+
+        $coupon = Coupon::where('code', $request->coupon_code)
+                        ->where(function ($query) {
+                            $query->whereDate('due_date', '>=', now())
+                                  ->orWhereNull('due_date');
+                        })
+                        ->first();
+
+        if (!$coupon) {
+            Log::error('Coupon validation failed', ['coupon_code' => $request->coupon_code]);
+            return back()->withErrors('Invalid or expired coupon code. Please try again.');
+        }
+
+        // Ensure there is a subtotal to work with
+        $subtotal = session('subtotal', 0);
+
+        if ($subtotal <= 0) {
+            Log::error('Subtotal for coupon calculation is not valid', ['subtotal' => $subtotal]);
+            return back()->withErrors('There seems to be an issue with the cart subtotal. Please check your cart and try again.');
+        }
+
+        // Calculating discount based on the type of the coupon
+        $discount = $coupon->type === 'fixed' ? $coupon->amount : round($subtotal * ($coupon->amount / 100), 2);
+
+        if ($discount <= 0) {
+            Log::error('Failed to calculate a valid discount', ['coupon_type' => $coupon->type, 'coupon_amount' => $coupon->amount, 'subtotal' => $subtotal]);
+            return back()->withErrors('Failed to calculate the discount. Please check the coupon details and try again.');
+        }
+
+        session([
+            'coupon' => [
+                'code' => $coupon->code,
+                'discount' => $discount
+            ]
+        ]);
+
+        Log::info('Coupon applied successfully', ['coupon_code' => $coupon->code, 'discount' => $discount]);
+        Log::info('Session data after applying coupon', ['session_data' => session()->all()]);
+
+        return back()->with('success', 'El cupón ' . $coupon->code . ' se ha aplicado correctamente.');
+    } catch (\Exception $e) {
+        Log::error('Error applying coupon', ['coupon_code' => $request->input('coupon_code', 'N/A'), 'error' => $e->getMessage()]);
+        return back()->withErrors('An error occurred while applying the coupon. Please try again.');
+    }
+}
+
+
+
 
 
 

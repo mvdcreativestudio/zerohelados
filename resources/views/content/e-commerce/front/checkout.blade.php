@@ -29,26 +29,35 @@ $configData = Helper::appClasses();
 
 @section('content')
 
-@if(session('success'))
-  <div class="alert alert-success d-flex" role="alert">
-    <span class="badge badge-center rounded-pill bg-success border-label-success p-3 me-2"><i class="bx bx-user fs-6"></i></span>
-    <div class="d-flex flex-column ps-1">
-      <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Correcto!</h6>
-      <span>{{ session('success') }}</span>
+<div class="container mt-4">
+  @if(session('success'))
+    <div class="alert alert-success d-flex" role="alert">
+      <span class="badge badge-center rounded-pill bg-success border-label-success p-3 me-2"><i class="bx bx-user fs-6"></i></span>
+      <div class="d-flex flex-column ps-1">
+        <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Correcto!</h6>
+        <span>{{ session('success') }}</span>
+      </div>
     </div>
-  </div>
-@elseif(session('error'))
-  <div class="alert alert-danger d-flex" role="alert">
-    <span class="badge badge-center rounded-pill bg-danger border-label-danger p-3 me-2"><i class="bx bx-user fs-6"></i></span>
-    <div class="d-flex flex-column ps-1">
-      <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Error!</h6>
-      <span>{{ session('error') }}</span>
-  </div>
-@endif
-
+  @elseif(session('error'))
+    <div class="alert alert-danger d-flex" role="alert">
+      <span class="badge badge-center rounded-pill bg-danger border-label-danger p-3 me-2"><i class="bx bx-user fs-6"></i></span>
+      <div class="d-flex flex-column ps-1">
+        <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Error!</h6>
+        <span>{{ session('error') }}</span>
+    </div>
+  @endif
+</div>
 
 <section class="section-py bg-body first-section-pt mt-5">
   <div class="container">
+    <!-- Coupon Application Form -->
+    <form action="{{ route('apply.coupon') }}" method="POST" class="mb-4">
+      @csrf
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Código del cupón" name="coupon_code" aria-label="Código del cupón" aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Aplicar cupón</button>
+      </div>
+    </form>
     <form action="{{ route('checkout.store') }}" method="POST">
       @csrf
       <div class="card px-3">
@@ -105,31 +114,7 @@ $configData = Helper::appClasses();
                 </div>
               </div>
 
-            <div id="form-credit-card">
-              <h4 class="mt-4 pt-2">Método de pago</h4>
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label" for="billings-card-num">Número de tarjeta</label>
-                    <div class="input-group input-group-merge">
-                      <input type="text" id="billings-card-num" class="form-control billing-card-mask" placeholder="7465 8374 5837 5067" aria-describedby="paymentCard" />
-                      <span class="input-group-text cursor-pointer p-1" id="paymentCard"><span class="card-type"></span></span>
 
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="billings-card-name">Nombre</label>
-                    <input type="text" id="billings-card-name" class="form-control" placeholder="John Doe" />
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label" for="billings-card-date">Vencimiento</label>
-                    <input type="text" id="billings-card-date" class="form-control billing-expiry-date-mask" placeholder="MM/YY" />
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label" for="billings-card-cvv">CVV</label>
-                    <input type="text" id="billings-card-cvv" class="form-control billing-cvv-mask" maxlength="3" placeholder="965" />
-                  </div>
-                </div>
-            </div>
           </div>
           <div class="col-lg-5 card-body">
             <h4 class="mb-2">Resumen del pedido</h4>
@@ -184,6 +169,12 @@ $configData = Helper::appClasses();
                 <p class="mb-0">Subtotal</p>
                 <h6 class="mb-0">${{$subtotal}}</h6>
               </div>
+              @if($discount > 0)
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <p class="mb-0">Cupón de descuento</p>
+                  <h6 class="mb-0">${{$discount}}</h6>
+                </div>
+              @endif
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Envío</p>
                 <h6 class="mb-0">${{$costoEnvio}}</h6>
