@@ -173,6 +173,7 @@ return [
     App\Providers\MenuServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
     Laraveles\Spanish\SpanishServiceProvider::class,
+    App\Providers\ComposerServiceProvider::class,
   ])->toArray(),
 
   /*

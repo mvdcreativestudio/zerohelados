@@ -51,13 +51,15 @@ $configData = Helper::appClasses();
 <section class="section-py bg-body first-section-pt mt-5">
   <div class="container">
     <!-- Coupon Application Form -->
-    <form action="{{ route('apply.coupon') }}" method="POST" class="mb-4">
-      @csrf
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Código del cupón" name="coupon_code" aria-label="Código del cupón" aria-describedby="button-addon2">
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Aplicar cupón</button>
-      </div>
-    </form>
+    @if($settings->enable_coupons)
+      <form action="{{ route('apply.coupon') }}" method="POST" class="mb-4">
+        @csrf
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Código del cupón" name="coupon_code" aria-label="Código del cupón" aria-describedby="button-addon2">
+          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Aplicar cupón</button>
+        </div>
+      </form>
+    @endif
     <form action="{{ route('checkout.store') }}" method="POST">
       @csrf
       <div class="card px-3">
@@ -145,9 +147,9 @@ $configData = Helper::appClasses();
                                 <div class="my-2 my-md-4 mb-md-5">
                                   @if ($details['price'])
                                     <s class="text-muted">${{ $details['old_price'] }}</s>
-                                    <span class="text-primary"> ${{ $details['price'] }}</span>
+                                    <span class="text-primary"> {{ $settings->currency_symbol }}{{ $details['price'] }}</span>
                                   @else
-                                    <span class="text-primary">${{ $details['old_price'] }}</span>
+                                    <span class="text-primary">{{ $settings->currency_symbol }}{{ $details['old_price'] }}</span>
                                   @endif
                                 </div>
                               </div>
@@ -167,22 +169,22 @@ $configData = Helper::appClasses();
             <div>
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Subtotal</p>
-                <h6 class="mb-0">${{$subtotal}}</h6>
+                <h6 class="mb-0">{{ $settings->currency_symbol }}{{$subtotal}}</h6>
               </div>
               @if($discount > 0)
                 <div class="d-flex justify-content-between align-items-center mt-3">
                   <p class="mb-0">Cupón de descuento</p>
-                  <h6 class="mb-0">${{$discount}}</h6>
+                  <h6 class="mb-0">{{ $settings->currency_symbol }}{{$discount}}</h6>
                 </div>
               @endif
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Envío</p>
-                <h6 class="mb-0">${{$costoEnvio}}</h6>
+                <h6 class="mb-0">{{ $settings->currency_symbol }}{{$costoEnvio}}</h6>
               </div>
               <hr>
               <div class="d-flex justify-content-between align-items-center mt-3 pb-1">
                 <p class="mb-0">Total</p>
-                <h6 class="mb-0">${{$totalPedido}}</h6>
+                <h6 class="mb-0">{{ $settings->currency_symbol }}{{$totalPedido}}</h6>
               </div>
               <div class="d-grid mt-3">
                 @if(session('cart') && count(session('cart')) > 0)

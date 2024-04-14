@@ -7,6 +7,8 @@
 // Datatable (jquery)
 $(function () {
   let borderColor, bodyBg, headingColor;
+  let currencySymbol = $('.datatables-products').data('symbol'); // Obtener el símbolo de moneda correctamente
+
 
   if (isDarkStyle) {
     borderColor = config.colors_dark.borderColor;
@@ -91,16 +93,16 @@ $(function () {
             }
         },
         {
-            targets: 5,
-            render: function(data, type, full, meta) {
-                return '$' + data;
-            }
+          targets: 5,
+          render: function(data, type, full, meta) {
+              return currencySymbol + parseFloat(data).toFixed(2);
+          }
         },
         {
           targets: 6,
           render: function(data, type, full, meta) {
               if (data !== null) {
-                  return '$' + data;
+                  return currencySymbol + parseFloat(data).toFixed(2);
               } else {
                   return '-';
               }

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\{
     LanguageController, RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
     ClientController, AccountingController, StoreController, RoleController, SupplierController, SupplierOrderController,
-    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController, MercadoPagoController};
+    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController, MercadoPagoController, CouponController};
 
 // Cambio de Idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
@@ -27,6 +27,7 @@ Route::middleware([
     Route::get('/product-categories/datatable', [ProductCategoryController::class, 'datatable'])->name('product-categories.datatable');
     Route::get('/orders/datatable', [OrderController::class, 'datatable'])->name('orders.datatable');
     Route::get('/orders/{order}/datatable', [OrderController::class, 'orderProductsDatatable'])->name('order-products.datatable');
+    Route::get('/marketing/coupons/datatable', [CouponController::class, 'datatable'])->name('coupons.datatable');
 
 
     // Recursos con acceso autenticado
@@ -41,6 +42,7 @@ Route::middleware([
         'product-categories' => ProductCategoryController::class,
         'orders' => OrderController::class,
         'invoices' => InvoiceController::class,
+        '/marketing/coupons' => CouponController::class,
     ]);
 
 
@@ -79,7 +81,6 @@ Route::middleware([
     Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
     // Orders
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
-
 
 });
 

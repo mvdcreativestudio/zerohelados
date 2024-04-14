@@ -53,9 +53,13 @@ class CheckoutController extends Controller
 
         $preferenceId = null;
 
-        // Pasar el ID de la preferencia y otros datos a la vista
-        return view('content.e-commerce.front.checkout', compact('order', 'cart', 'subtotal', 'costoEnvio', 'totalPedido', 'envioGratis', 'preferenceId', 'discount'));
+        // Obtener configuraciones de ecommerce
+        $settings = \DB::table('ecommerce_settings')->first();
+
+        // Pasar el ID de la preferencia y otros datos a la vista junto con los settings
+        return view('content.e-commerce.front.checkout', compact('order', 'cart', 'subtotal', 'costoEnvio', 'totalPedido', 'envioGratis', 'preferenceId', 'discount', 'settings'));
     }
+
 
 
 

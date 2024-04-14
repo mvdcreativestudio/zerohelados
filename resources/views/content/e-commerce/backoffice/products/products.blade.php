@@ -56,7 +56,7 @@
           <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
             <div>
               <h6 class="mb-2">Ventas en tienda</h6>
-              <h4 class="mb-2">$67.485</h4>
+              <h4 class="mb-2">Simbolo {{$settings->currency_symbol}}</h4>
               <p class="mb-0"><span class="text-muted me-2">134 ventas</span><span class="badge bg-label-success">+5.7%</span></p>
             </div>
             <div class="avatar me-sm-4">
@@ -188,7 +188,7 @@
 
 
   <div class="card-datatable table-responsive">
-    <table class="datatables-products table border-top" data-ajax-url="{{ route('products.datatable') }}">
+    <table class="datatables-products table border-top" data-ajax-url="{{ route('products.datatable') }}" data-symbol="{{ $settings->currency_symbol }}">
       <thead>
         <tr>
           <th></th>

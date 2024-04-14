@@ -84,14 +84,21 @@
           "slug": "product-categories"
         },
         {
-          "url": "/ecommerce/marketing",
-          "name": "Marketing",
-          "slug": "marketing"
-        },
-        {
           "url": "/ecommerce/settings",
           "name": "Configuración",
           "slug": "settings"
+        }
+      ]
+    },
+    {
+      "name": "Marketing",
+      "icon": "menu-icon tf-icons bx bx-coffee",
+      "slug": "accounting",
+      "submenu": [
+        {
+          "url": "/marketing/coupons",
+          "name": "Cupones",
+          "slug": "coupons"
         }
       ]
     },
