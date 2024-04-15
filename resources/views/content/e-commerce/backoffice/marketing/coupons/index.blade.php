@@ -1,10 +1,24 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Productos')
+@section('title', 'Cupones')
+
+@section('vendor-style')
+@vite([
+  'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
+  'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss',
+  'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss'
+])
+@endsection
 
 @section('page-script')
 @vite([
   'resources/assets/js/custom-js/app-coupons-list.js'
+])
+@endsection
+
+@section('vendor-script')
+@vite([
+  'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'
 ])
 @endsection
 
@@ -59,31 +73,57 @@
   </div>
 </div>
 
+
+
 <div class="card">
-  <h5 class="card-header">Cupones</h5>
+  <div class="card pb-3">
+    <h5 class="card-header pb-0">
+      Cupones
+      <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#addCouponModal">
+        Agregar Cupón
+      </button>
+      <div class="dropdown d-inline float-end mx-2">
+        <button class="btn btn-primary dropdown-toggle d-none" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          Acciones
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="#" id="deleteSelected">Eliminar seleccionados</a></li>
+        </ul>
+      </div>
+    </h5>
+  </div>
   <div class="card-datatable table-responsive pt-0">
-    <table class="table datatables-coupons">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Código</th>
-          <th>Tipo</th>
-          <th>Valor</th>
-          <th>Categorías de Producto</th>
-          <th>Productos</th>
-          <th>Fecha de Expiración</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="table-border-bottom-0">
-        <!-- Datos llenados por DataTables -->
-      </tbody>
-    </table>
+    @if($coupon->count() > 0)
+      <table class="table datatables-coupons">
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Fecha de Creación</th>
+            <th>Fecha de Expiración</th>
+            <th>Creado por</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          <!-- Datos llenados por DataTables -->
+        </tbody>
+      </table>
+    @else
+      <div class="text-center py-5">
+        <h4>No hay cupones</h4>
+        <p class="text-muted">Agrega un nuevo cupón para comenzar</p>
+      </div>
+    @endif
   </div>
 </div>
 
 
-
-
+@include('content.e-commerce.backoffice.marketing.coupons.add-coupon')
+@include('content.e-commerce.backoffice.marketing.coupons.edit-coupon')
 
 @endsection
+

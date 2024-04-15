@@ -112,6 +112,7 @@ $(function () {
         '>',
         lengthMenu: [10, 25, 50, 100],
         language: {
+        search: "", 
         searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
         info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',

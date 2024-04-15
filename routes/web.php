@@ -81,6 +81,9 @@ Route::middleware([
     Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
     // Orders
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
+    // Cupones
+    Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
+    Route::get('coupons/{id}', [CouponController::class, 'show'])->name('coupons.show');
 
 });
 
