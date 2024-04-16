@@ -40,8 +40,9 @@
 <div class="app-ecommerce">
 
   <!-- Add Product -->
-<form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
+    @method('PUT')
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
 
     <div class="d-flex flex-column justify-content-center">
@@ -70,7 +71,7 @@
           </div>
           <div class="row mb-3">
             <div class="col"><label class="form-label" for="ecommerce-product-sku">SKU</label>
-              <input type="number" class="form-control" id="ecommerce-product-sku" placeholder="SKU" name="sku" value="{{$product->SKU}}" aria-label="SKU"></div>
+              <input type="number" class="form-control" id="ecommerce-product-sku" placeholder="SKU" name="sku" value="{{$product->sku}}" aria-label="SKU"></div>
           </div>
           <!-- Description -->
           <div>
@@ -274,7 +275,7 @@
             <select id="vendor" class="select2 form-select" data-placeholder="Seleccionar local" name="store_id">
               <option value="">Seleccionar local</option>
               @foreach ($stores as $store)
-                <option value="{{ $store->id }}">{{ $store->name }}</option>
+                <option value="{{ $store->id }}" {{ $product->store_id == $store->id ? 'selected' : '' }}>{{ $store->name }}</option>
               @endforeach
 
             </select>
@@ -282,14 +283,15 @@
           <!-- Category -->
           <div class="mb-3 col ecommerce-select2-dropdown">
             <label class="form-label mb-1 d-flex justify-content-between align-items-center" for="category-org">
-              <span>Categoría</span><a href="javascript:void(0);" class="fw-medium">Crear categoría</a>
+                <span>Categoría</span><a href="javascript:void(0);" class="fw-medium">Crear categoría</a>
             </label>
             <select id="category-org" class="select2 form-select" data-placeholder="Seleccione la categoría" name="categories[]" multiple>
-              @foreach ($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-              @endforeach
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}" {{ $product->categories->contains($category->id) ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
             </select>
-
           </div>
         </div>
       </div>

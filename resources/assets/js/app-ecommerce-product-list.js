@@ -58,17 +58,18 @@ $(function () {
             searchable: false,
             orderable: false,
             render: function (data, type, full, meta) {
-                return (
-                    '<div class="d-inline-block text-nowrap">' +
-                    '<button class="btn btn-sm btn-icon edit-button" data-id="' + full['id'] + '"><i class="bx bx-edit"></i></button>' +
-                    '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
-                    '<div class="dropdown-menu dropdown-menu-end m-0">' +
-                    '<a href="' + baseUrl + 'products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
-                    '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
-                    '</div>' +
-                    '</div>'
-                );
-            }
+              return (
+                  '<div class="d-inline-block text-nowrap">' +
+                  '<a href="' + baseUrl + 'products/' + full['id'] + '/edit" class="btn btn-sm btn-icon edit-button"><i class="bx bx-edit"></i></a>' +
+                  '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
+                  '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                  '<a href="' + baseUrl + 'products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
+                  '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
+                  '</div>' +
+                  '</div>'
+              );
+          }
+
         },
 
         {

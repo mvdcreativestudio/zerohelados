@@ -87,17 +87,19 @@ class ProductController extends Controller
   public function datatable()
   {
       $query = Product::with(['categories:id,name', 'store:id,name'])
-                      ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft']);
+                      ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft'])
+                      ->where('is_trash', '!=', 1);
 
       return DataTables::of($query)
           ->addColumn('category', function ($product) {
               return $product->categories->implode('name', ', ');
           })
           ->addColumn('store_name', function ($product) {
-              return $product->store->name; // Acceder al nombre de la tienda a través de la relación 'store'
+              return $product->store->name;
           })
           ->make(true);
   }
+
 
   public function edit($id)
   {
@@ -105,23 +107,41 @@ class ProductController extends Controller
     $categories = ProductCategory::all();
     $stores = Store::all();
     $flavors = Flavor::all();
+
     return view('content.e-commerce.backoffice.products.edit-product', compact('product', 'stores', 'categories', 'flavors'));
   }
 
 
   public function update(Request $request, $id)
-  {
+{
     $product = Product::findOrFail($id);
-    $product->update($request->all());
 
-    // Sincroniza las categorías y sabores como en el método store
+    // Actualiza solo los campos necesarios
+    $product->update([
+        'name' => $request->input('name'),
+        'sku' => $request->input('sku'),
+        'description' => $request->input('description'),
+        'type' => $request->input('type'),
+        'max_flavors' => $request->input('max_flavors'),
+        'old_price' => $request->input('old_price'),
+        'price' => $request->input('price'),
+        'discount' => $request->input('discount'),
+        'store_id' => $request->input('store_id'),
+        'status' => $request->input('status'),
+        'stock' => $request->input('stock'),
+    ]);
+
+    // Sincroniza las categorías
     $product->categories()->sync($request->input('categories', []));
+
+    // Sincroniza los sabores
     if ($request->filled('flavors')) {
-        $product->flavors()->sync($request->flavors);
+        $product->flavors()->sync($request->input('flavors', []));
     }
 
     return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
-  }
+}
+
 
   public function switchStatus()
   {
