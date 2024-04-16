@@ -56,6 +56,7 @@ class CheckoutController extends Controller
         // Obtener configuraciones de ecommerce
         $settings = \DB::table('ecommerce_settings')->first();
 
+
         // Pasar el ID de la preferencia y otros datos a la vista junto con los settings
         return view('content.e-commerce.front.checkout', compact('order', 'cart', 'subtotal', 'costoEnvio', 'totalPedido', 'envioGratis', 'preferenceId', 'discount', 'settings'));
     }
@@ -75,7 +76,7 @@ class CheckoutController extends Controller
 
   public function store(Request $request)
 {
-    try {
+      try {
         // Obtener el ID de la tienda de la sesión
         $storeId = session('store.id');
 
@@ -87,6 +88,7 @@ class CheckoutController extends Controller
             'phone' => 'required',
             'email' => 'required|email',
             'payment_method' => 'required',
+            'shipping_method' => 'required',
         ]);
 
         // Preparar datos del cliente
@@ -109,14 +111,30 @@ class CheckoutController extends Controller
             $cartItems = [];
         }
 
+        // Inicializar un array para almacenar los sabores de los productos en la orden
+        $flavorsData = [];
+
         foreach ($cartItems as $item) {
             $price = $item['price'] ?? $item['old_price'];
             $subtotal += $price * ($item['quantity'] ?? 1);
+
+            // Obtener los sabores seleccionados para este producto
+            $flavors = $item['flavors'] ?? [];
+
+            // Asociar los sabores seleccionados con este producto
+            foreach ($flavors as $flavorId => $flavorName) {
+                $flavorsData[] = [
+                    'product_id' => $item['id'],
+                    'flavor_id' => $flavorId,
+                ];
+            }
         }
 
+        // Calcular el costo de envío y el total de la orden
         $costoEnvio = session('costoEnvio', 60); // Costo de envío predeterminado si no se ha establecido en la sesión
         $total = $subtotal + $costoEnvio;
 
+        // Preparar datos de la orden
         $orderData = [
             'date' => now(),
             'time' => now()->format('H:i:s'),
@@ -129,16 +147,19 @@ class CheckoutController extends Controller
             'payment_status' => 'pending',
             'shipping_status' => 'pending',
             'payment_method' => $validatedData['payment_method'],
-            'shipping_method' => 'peya',
+            'shipping_method' => $validatedData['shipping_method'],
         ];
 
-        Log::info('Datos validados y preparados para la orden y el cliente:', [
-            'client_data' => $clientData,
-            'order_data' => $orderData
-        ]);
-
+        // Guardar la orden y los datos del cliente
         DB::beginTransaction();
         $order = $this->orderRepository->createOrder($clientData, $orderData, $cartItems);
+
+        // Guardar los sabores de los productos en la orden
+        foreach ($flavorsData as $flavor) {
+            $order->products()->attach($flavor['product_id'], ['flavor_id' => $flavor['flavor_id']]);
+        }
+
+        DB::commit();
 
         Log::info('Orden creada:', $order->toArray());
 

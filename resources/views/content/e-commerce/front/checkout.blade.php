@@ -59,7 +59,7 @@ $configData = Helper::appClasses();
 </div>
 
 <section class="section-py bg-body first-section-pt mt-5 vh-100">
-  <div class="container-fluid">
+  <div class="container">
     <!-- Coupon Application Form -->
     @if($settings->enable_coupons)
       <form action="{{ route('apply.coupon') }}" method="POST" class="mb-4">
@@ -76,7 +76,8 @@ $configData = Helper::appClasses();
         <div class="row">
           <div class="col-lg-7 card-body border-end">
             <h4 class="mb-2">Finalizar Compra</h4>
-            <div class="row py-4 my-2">
+            <div class="row pt-4 my-2">
+              <h6>Método de pago</h6>
               <div class="col-md mb-md-0 mb-2">
                 <div class="form-check custom-option custom-option-basic checked">
                   <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioVisa">
@@ -100,7 +101,32 @@ $configData = Helper::appClasses();
                 </div>
               </div>
             </div>
-            <h4 class="mt-2 mb-4">Datos de envío</h4>
+            <div class="row py-3 my-2">
+              <h6>Método de envío</h6>
+              <div class="col-md mb-md-0 mb-2">
+                  <div class="form-check custom-option custom-option-basic checked">
+                      <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioPedidosYa">
+                          <input name="shipping_method" class="form-check-input" type="radio" value="peya" id="customRadioPedidosYa" checked />
+                          <span class="custom-option-body">
+                              <img src="{{ asset('assets/img/icons/payments/visa-'.$configData['style'].'.png') }}" alt="visa-card" width="58" data-app-light-img="icons/payments/visa-light.png" data-app-dark-img="icons/payments/visa-dark.png">
+                              <span class="ms-3">Pedidos Ya</span>
+                          </span>
+                      </label>
+                  </div>
+              </div>
+              <div class="col-md mb-md-0 mb-2">
+                  <div class="form-check custom-option custom-option-basic">
+                      <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioRetiroLocal">
+                          <input name="shipping_method" class="form-check-input" type="radio" value="pickup" id="customRadioRetiroLocal" />
+                          <span class="custom-option-body">
+                              <img src="{{ asset('assets/img/icons/payments/cash.png') }}" alt="paypal" width="58">
+                              <span class="ms-3">Retiro en el local</span>
+                          </span>
+                      </label>
+                  </div>
+              </div>
+            </div>
+            <h4 class="mt-2 mb-4">Completa tus datos</h4>
               <div class="row">
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="name">Nombre</label>
@@ -146,8 +172,9 @@ $configData = Helper::appClasses();
                               @if (!empty($details['flavors']))
                               <small class="mt-0">
                                 @foreach($details['flavors'] as $flavor)
-                                  - {{ $flavor['name'] }}
+                                  <p class="text-muted m-0 p-0">{{ $flavor }}</p>
                                 @endforeach
+
                               </small>
                               @endif
                               <input type="number" class="form-control form-control-sm w-px-100 mt-2" value="{{ $details['quantity'] }}" min="1" max="5">

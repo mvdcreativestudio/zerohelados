@@ -65,11 +65,11 @@ $(function () {
                   '<div class="dropdown-menu dropdown-menu-end m-0">' +
                   '<a href="' + baseUrl + 'products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
                   '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
+                  '<a href="javascript:void(0);" class="dropdown-item text-danger delete-button" data-id="' + full['id'] + '">Eliminar</a>' +
                   '</div>' +
                   '</div>'
               );
           }
-
         },
 
         {
@@ -283,6 +283,62 @@ $(function () {
       }
     });
   });
+
+
+// Eliminar producto
+$(document).on('click', '.delete-button', function () {
+  var productId = $(this).data('id');
+
+  // Mostrar ventana de confirmación SweetAlert
+  Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Una vez eliminado, no podrás recuperar este producto.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+  }).then((result) => {
+      if (result.isConfirmed) {
+          // Obtener el token CSRF
+          var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+          // Realizar una solicitud AJAX para eliminar el producto
+          $.ajax({
+              type: "DELETE",
+              url: baseUrl + "products/" + productId,
+              data: {
+                  // Enviar el token CSRF en la solicitud
+                  _token: csrfToken
+              },
+              success: function (response) {
+                  // Mostrar mensaje de éxito con SweetAlert
+                  Swal.fire({
+                      title: '¡Eliminado!',
+                      text: 'El producto ha sido eliminado correctamente.',
+                      icon: 'success',
+                      showConfirmButton: false,
+                      timer: 1500
+                  });
+
+                  // Recargar la tabla después de eliminar el producto
+                  dt_products.ajax.reload(null, false);
+              },
+              error: function (xhr, status, error) {
+                  console.error(xhr.responseText);
+                  // Mostrar mensaje de error con SweetAlert
+                  Swal.fire({
+                      title: 'Error',
+                      text: 'Hubo un error al intentar eliminar el producto.',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                  });
+              }
+          });
+      }
+  });
+});
 
 
 });

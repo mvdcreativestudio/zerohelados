@@ -139,14 +139,15 @@ Swal.fire({
                                     <small class="cart-product-variants">{{ $details['quantity'] }} x ${{ $details['price'] }}</small>
                                 @endif
                             </div>
-                            @if(isset($details['flavors']) && count($details['flavors']) > 0)
-                              <div class="cart-flavors">
-                                  @foreach($details['flavors'] as $flavor)
-                                    <p class="text-muted m-0 p-0">{{ $flavor['name'] }}</p>
-                                  @endforeach
+                            @if(isset($details['flavors']) && is_array($details['flavors']) && count($details['flavors']) > 0)
+                            <div class="cart-flavors">
+                                @foreach($details['flavors'] as $flavor)
+                                    <p class="text-muted m-0 p-0">{{ $flavor }}</p>
+                                @endforeach
+                            </div>
+                        @endif
 
-                              </div>
-                            @endif
+
                             @if ($details['price'] == null)
                                 <p class="product-price">${{ $details['old_price'] * $details['quantity'] }}</p>
                             @else

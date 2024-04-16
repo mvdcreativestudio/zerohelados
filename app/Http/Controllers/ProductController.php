@@ -156,6 +156,15 @@ class ProductController extends Controller
       return response()->json(['success' => true, 'message' => 'Estado del producto actualizado correctamente.']);
   }
 
+  public function destroy($id)
+  {
+      $product = Product::findOrFail($id);
+      $product->is_trash = 1;
+      $product->save();
+
+      return response()->json(['success' => true, 'message' => 'Producto eliminado correctamente.']);
+  }
+
 
   public function flavors()
   {
