@@ -91,9 +91,17 @@ $(function () {
         '>',
       lengthMenu: [7, 10, 20, 50, 70, 100], //for length of menu
       language: {
-        sLengthMenu: '_MENU_',
         search: '',
-        searchPlaceholder: 'Buscar categoría...'
+        searchPlaceholder: 'Buscar categoría...',
+        sLengthMenu: '_MENU_',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ categorías',
+        infoFiltered: "filtrados de _MAX_ categorías",
+        paginate: {
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
+        },
       },
       // Button for offcanvas
       buttons: [
@@ -107,8 +115,11 @@ $(function () {
         }
       ],
     });
-    $('.dataTables_length').addClass('mt-0 mt-md-3');
-    $('.dt-action-buttons').addClass('pt-0');
+    $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
+    $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
+    $('.dt-buttons').addClass('d-flex flex-wrap');
+    $('.dataTables_length label select').addClass('form-select form-select-sm');
+    $('.dataTables_filter label input').addClass('form-control');
   }
 
   // Delete Record

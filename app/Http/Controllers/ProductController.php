@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Store;
 use App\Models\ProductCategory;
 use App\Models\Flavor;
+use App\Http\Requests\StoreFlavorRequest;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
 
@@ -112,31 +113,83 @@ class ProductController extends Controller
   }
 
 
-  public function attributes()
+  public function flavors()
   {
-    return view('content.e-commerce.backoffice.products.attributes');
+    $flavor = Flavor::all();
+    return view('content.e-commerce.backoffice.products.flavors', compact('flavor'));
   }
 
-  public function duplicate($id)
+  public function flavorsDatatable()
   {
-      // Obtener el producto original
-      $originalProduct = Product::findOrFail($id);
+      $flavors = Flavor::all();
 
-      // Crear un nuevo producto con los mismos datos
-      $newProduct = $originalProduct->replicate();
-      $newProduct->name = $originalProduct->name . ' (Copia)';
-      // Puedes modificar otros campos si es necesario
+      return DataTables::of($flavors)
+          ->addColumn('action', function($flavor){
+              return '<a href="#" class="btn btn-primary btn-sm">Editar</a>';
+          })
+          ->rawColumns(['action'])
+          ->make(true);
+  }
 
-      // Guardar el nuevo producto
-      $newProduct->save();
+  public function storeFlavors(StoreFlavorRequest $request)
+  {
+      $flavor = new Flavor();
+      $flavor->name = $request->name;
+      $flavor->status = $request->status ?? 'active';
 
-      // Redirigir a la vista de creación con los datos del producto duplicado
-      return redirect()->route('products.create')->with('product', $newProduct);
+      $flavor->save();
+
+      return redirect()->route('product-flavors')->with('success', 'Sabor creado correctamente.');
+  }
+
+  public function storeMultipleFlavors(Request $request)
+  {
+      $data = json_decode($request->getContent(), true);
+      $names = $data['name'];
+      $status = $data['status'] ?? 'active';  // Asume 'active' si no se especifica
+
+      foreach ($names as $name) {
+          $flavor = new Flavor();
+          $flavor->name = trim($name);
+          $flavor->status = $status;
+          $flavor->save();
+      }
+
+      return response()->json(['success' => true, 'message' => 'Sabores múltiples creados correctamente.']);
   }
 
 
+  public function editFlavor($id)
+  {
+      $flavors = Flavor::findOrFail($id);
+      return view('content.e-commerce.backoffice.products.flavors.edit-flavor', compact('flavors'));
+  }
 
+  public function updateFlavor($id)
+  {
+      $flavor = Flavor::findOrFail($id);
+      $flavor->name = request('name');
+      $flavor->save();
 
+      return view ('content.e-commerce.backoffice.products.flavors', compact('flavor'))->with('success', 'Sabor actualizado correctamente.');
+  }
+
+  public function destroyFlavor($id)
+  {
+      $flavor = Flavor::findOrFail($id);
+      $flavor->delete();
+
+      return response()->json(['success' => true, 'message' => 'Sabor eliminado correctamente.']);
+  }
+
+  public function switchFlavorStatus($id)
+  {
+      $flavor = Flavor::findOrFail($id);
+      $flavor->status = $flavor->status === 'active' ? 'inactive' : 'active';
+      $flavor->save();
+
+      return response()->json(['success' => true, 'message' => 'Estado del sabor actualizado correctamente.']);
+  }
 
 
 }

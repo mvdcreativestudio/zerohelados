@@ -95,14 +95,14 @@ $(function () {
         {
           targets: 5,
           render: function(data, type, full, meta) {
-              return currencySymbol + parseFloat(data).toFixed(2);
+              return currencySymbol + parseFloat(data).toFixed(0);
           }
         },
         {
           targets: 6,
           render: function(data, type, full, meta) {
               if (data !== null) {
-                  return currencySymbol + parseFloat(data).toFixed(2);
+                  return currencySymbol + parseFloat(data).toFixed(0);
               } else {
                   return '-';
               }
@@ -123,7 +123,7 @@ $(function () {
 
       order: [2, 'asc'], //set any columns order asc/desc
       dom:
-        '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
+        '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center pt-0"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
         '>t' +
         '<"row mx-2"' +
         '<"col-sm-12 col-md-6"i>' +
@@ -131,11 +131,11 @@ $(function () {
         '>',
         lengthMenu: [10, 25, 50, 100],
         language: {
+        search: '',
         searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
         info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
         infoFiltered: "filtrados de _MAX_ productos",
-
         paginate: {
           first: '<<',
           last: '>>',
@@ -163,11 +163,12 @@ $(function () {
       initComplete: function () {
         // Adding type filter once table initialized
         this.api()
+
           .columns(4) // Assuming 'tipo' column is at index 4
           .every(function () {
             var column = this;
             var select = $(
-              '<select id="ProductType" class="form-select text-capitalize"><option value="">Tipo</option></select>'
+              '<select id="ProductType" class="form-select"><option value="">Todos los tipos</option></select>'
             )
               .appendTo('.product_type')
               .on('change', function () {
@@ -185,10 +186,10 @@ $(function () {
           });
         // Adding category filter once table initialized
         this.api()
-          .columns(-3)
+          .columns(7)
           .every(function () {
               var column = this;
-              var select = $('<select class="form-select text-capitalize"><option value="">Categoría</option></select>')
+              var select = $('<select class="form-select"><option value="">Todas las categorías</option></select>')
                   .appendTo('.product_category')
                   .on('change', function () {
                       var val = $.fn.dataTable.util.escapeRegex($(this).val());
@@ -205,11 +206,11 @@ $(function () {
           });
           // Adding store filter once table initialized
           this.api()
-          .columns(-2)
+          .columns(8)
           .every(function () {
               var column = this;
               var select = $(
-                  '<select id="ProductStore" class="form-select text-capitalize"><option value="">Local</option></select>'
+                  '<select id="ProductStore" class="form-select"><option value="">Todos los locales</option></select>'
               )
               .appendTo('.product_store')
               .on('change', function () {
@@ -226,6 +227,7 @@ $(function () {
               });
           });
     }
+
 
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');

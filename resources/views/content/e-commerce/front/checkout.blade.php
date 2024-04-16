@@ -29,6 +29,16 @@ $configData = Helper::appClasses();
 
 @section('content')
 
+<div class="video-container">
+  <video autoplay muted loop id="myVideo" class="video-background">
+      <source src="./assets/img/videos/back-chelato.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay-store">
+    <h2 class="header-title-store">Finalizar Compra</h2>
+    <img src="./assets/img/branding/chelato-white.png" class="logo-header-store" alt="">
+  </div>
+</div>
+
 <div class="container mt-4">
   @if(session('success'))
     <div class="alert alert-success d-flex" role="alert">
@@ -48,8 +58,8 @@ $configData = Helper::appClasses();
   @endif
 </div>
 
-<section class="section-py bg-body first-section-pt mt-5">
-  <div class="container">
+<section class="section-py bg-body first-section-pt mt-5 vh-100">
+  <div class="container-fluid">
     <!-- Coupon Application Form -->
     @if($settings->enable_coupons)
       <form action="{{ route('apply.coupon') }}" method="POST" class="mb-4">
@@ -165,7 +175,7 @@ $configData = Helper::appClasses();
               </ul>
           </div>
 
-
+          @if(session('cart') && count(session('cart')) > 0)
             <div>
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Subtotal</p>
@@ -202,6 +212,7 @@ $configData = Helper::appClasses();
               {{-- <p class="mt-4 pt-2">By continuing, you accept to our Terms of Services and Privacy Policy. Please note that payments are non-refundable.</p> --}}
             </div>
           </div>
+          @endif
         </div>
       </div>
     </form>

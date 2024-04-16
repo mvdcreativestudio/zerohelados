@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Repositories\OrderRepository;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -63,6 +64,7 @@ class OrderController extends Controller
             $this->orderRepository->destroyOrder($id);
             return response()->json(['success' => true, 'message' => 'Pedido eliminado correctamente.']);
         } catch (\Exception $e) {
+            Log::info($e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error al eliminar el pedido.'], 400);
         }
     }

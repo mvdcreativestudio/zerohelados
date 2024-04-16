@@ -74,9 +74,9 @@
           "slug": "products"
         },
         {
-          "url": "product-attributes",
+          "url": "product-flavors",
           "name": "Sabores",
-          "slug": "product-attributes"
+          "slug": "product-flavors"
         },
         {
           "url": "product-categories",

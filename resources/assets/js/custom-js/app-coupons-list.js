@@ -21,7 +21,16 @@ $(function () {
             { data: 'id' },
             { data: 'code' },
             { data: 'type' },
-            { data: 'amount' },
+            {
+              data: 'amount',
+              render: function(data, type, full, meta) {
+                  if (full.type === 'percentage') {
+                      return data + '%'; // Agrega '%' después del número
+                  } else {
+                      return '$' + data; // Agrega '$' antes del número
+                  }
+              }
+            },
             { data: 'created_at'},
             { data: 'due_date' },
             { data: 'creator_name' },
@@ -82,9 +91,9 @@ $(function () {
                       '<div class="d-flex justify-content-center align-items-center">' +
                       '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></button>' +
                       '<div class="dropdown-menu dropdown-menu-end m-0">' +
-                      '<a href="' + baseUrl + 'coupons/' + full['id'] + '/show" class="dropdown-item">Ver Cupón</a>' +
+                      '<a href="' + baseUrl + 'coupons/' + full['id'] + '/show" class="dropdown-item">Ver</a>' +
+                      '<a href="javascript:void(0);" class="dropdown-item edit-record" data-id="' + full['id'] + '">Editar</a>' +
                       '<a href="javascript:void(0);" class="dropdown-item delete-record" data-id="' + full['id'] + '">Eliminar</a>' +
-                      '<a href="javascript:void(0);" class="dropdown-item edit-record" data-id="' + full['id'] + '">Editar</a>' + // Agregado el botón de editar
                       '</div>' +
                       '</div>'
                   );
@@ -263,6 +272,7 @@ $(function () {
 
 
 
+
   $('#deleteSelected').on('click', function () {
       var selectedIds = [];
 
@@ -326,6 +336,46 @@ $(function () {
           }
       });
   });
+
+  // Limitar a 100% cuando está seleccionado porcentaje en add-coupon
+  $(document).ready(function() {
+    // Función para aplicar la restricción de valor máximo
+    function applyMaxAmountConstraint($typeSelect, $amountInput) {
+        if ($typeSelect.val() === 'percentage') {
+            $amountInput.attr('max', '100');
+            if (parseInt($amountInput.val()) > 100) {
+                $amountInput.val('100');
+            }
+        } else {
+            $amountInput.removeAttr('max');
+        }
+    }
+
+    // Aplicar las restricciones tanto en el modal de añadir como en el de editar
+    var $addTypeSelect = $('#addCouponModal #couponType');
+    var $addAmountInput = $('#addCouponModal #couponAmount');
+    $addTypeSelect.on('change', function() {
+        applyMaxAmountConstraint($addTypeSelect, $addAmountInput);
+    });
+    $addAmountInput.on('input', function() {
+        applyMaxAmountConstraint($addTypeSelect, $addAmountInput);
+    });
+
+    var $editTypeSelect = $('#editCouponModal #couponType');
+    var $editAmountInput = $('#editCouponModal #couponAmount');
+    $editTypeSelect.on('change', function() {
+        applyMaxAmountConstraint($editTypeSelect, $editAmountInput);
+    });
+    $editAmountInput.on('input', function() {
+        applyMaxAmountConstraint($editTypeSelect, $editAmountInput);
+    });
+
+    // Inicialización inicial para ambos modales
+    applyMaxAmountConstraint($addTypeSelect, $addAmountInput);
+    applyMaxAmountConstraint($editTypeSelect, $editAmountInput);
+  });
+
+
 
   $('#addCouponModal').on('click', '#submitCouponBtn', function () {
       submitNewCoupon();

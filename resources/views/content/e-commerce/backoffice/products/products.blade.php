@@ -178,16 +178,16 @@
       </div>
     </div>
 
-         <!-- Información adicional -->
-         <div class="d-flex justify-content-start align-items-center row py-3 gap-3 gap-md-0">
-          <div class="col-md-2 product_type"></div>
-          <div class="col-md-2 product_category"></div>
-          <div class="col-md-2 product_store"></div>
-        </div>
+    <!-- Información adicional -->
+    <div class="d-flex justify-content-start align-items-center row py-3 gap-3 mb-0 pb-0 gap-md-0">
+      <div class="col-md-2 product_type"></div>
+      <div class="col-md-2 product_category"></div>
+      <div class="col-md-2 product_store"></div>
+    </div>
   </div>
 
 
-  <div class="card-datatable table-responsive">
+  <div class="card-datatable table-responsive pt-0 mt-0">
     <table class="datatables-products table border-top" data-ajax-url="{{ route('products.datatable') }}" data-symbol="{{ $settings->currency_symbol }}">
       <thead>
         <tr>

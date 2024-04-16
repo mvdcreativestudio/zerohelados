@@ -58,7 +58,7 @@
       </table>
     </div>
   </div>
-  <!-- Offcanvas to add new customer -->
+  <!-- Offcanvas to add new category -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEcommerceCategoryList" aria-labelledby="offcanvasEcommerceCategoryListLabel">
     <!-- Offcanvas Header -->
     <div class="offcanvas-header py-4">

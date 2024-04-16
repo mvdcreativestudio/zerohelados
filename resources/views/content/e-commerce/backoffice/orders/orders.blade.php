@@ -102,7 +102,7 @@
 <!-- Order List Table -->
 <div class="card">
   <div class="card-datatable table-responsive">
-    <table class="datatables-order table border-top">
+    <table class="datatables-order table border-top" data-symbol="{{ $settings->currency_symbol }}">
       <thead>
         <tr>
           <th></th>

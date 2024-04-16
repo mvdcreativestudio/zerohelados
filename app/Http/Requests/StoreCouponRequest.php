@@ -16,7 +16,7 @@ class StoreCouponRequest extends FormRequest
         return [
             'code' => 'required|string|unique:coupons,code',
             'type' => 'required|in:fixed,percentage',
-            'amount' => 'required|numeric|max:100',
+            'amount' => 'required|numeric',
             'due_date' => 'nullable|date',
         ];
     }

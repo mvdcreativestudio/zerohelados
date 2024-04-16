@@ -9,6 +9,8 @@ class Flavor extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'status'];
+
     public function products()
     {
         return $this->belongsToMany(Product::class, 'product_flavor')->withTimestamps();

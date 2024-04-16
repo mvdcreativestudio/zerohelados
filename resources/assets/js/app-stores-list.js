@@ -113,10 +113,32 @@ document.addEventListener('DOMContentLoaded', function () {
   $('div.dataTables_filter input').addClass('form-control');
   $('div.dataTables_length select').addClass('form-select');
 
-  $('.delete-button').click(function () {
+  $('.delete-button').click(function() {
     var form = $(this).closest('form');
-    if (confirm('¿Estás seguro de que deseas cambiar el estado de esta tienda?')) {
-      form.submit();
-    }
-  });
+    Swal.fire({
+        title: '¿Seguro?',
+        text: "Estás a punto de cambiar el estado de la tienda",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cambiarlo!',
+        cancelButtonText: 'No, cancelar!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            Swal.fire(
+                'Cancelado',
+                'El estado de la tienda está seguro :)',
+                'error'
+            )
+        }
+    });
+});
+
 });

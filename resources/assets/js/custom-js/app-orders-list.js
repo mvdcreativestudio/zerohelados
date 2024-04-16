@@ -8,6 +8,7 @@
 
 $(function () {
   let borderColor, bodyBg, headingColor;
+  let $currencySymbol = $('.datatables-order').data('symbol');
 
   if (isDarkStyle) {
     borderColor = config.colors_dark.borderColor;
@@ -86,6 +87,12 @@ $(function () {
           }
         },
         {
+          targets: 4,
+          render: function(data, type, full, meta) {
+              return $currencySymbol + data;
+          }
+        },
+        {
           targets: 5,
           render: function (data, type, full, meta) {
             let badgeClass = (data === 'pending') ? 'bg-warning' : (data === 'paid') ? 'bg-success' : 'bg-danger';
@@ -102,7 +109,7 @@ $(function () {
           }
         },
       ],
-      order: [1, 'asc'],
+      order: [0, 'desc'],
       dom:
         '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
         '>t' +
@@ -112,7 +119,7 @@ $(function () {
         '>',
         lengthMenu: [10, 25, 50, 100],
         language: {
-        search: "", 
+        search: "",
         searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',
         info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
@@ -141,7 +148,7 @@ $(function () {
       var recordId = $(this).data('id');
       Swal.fire({
         title: '¿Estás seguro?',
-        text: "Esta acción no se puede deshacer",
+        text: "Esta acción eliminará completamente el pedido, perdiendo definitivamente sus datos",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

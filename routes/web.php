@@ -28,6 +28,7 @@ Route::middleware([
     Route::get('/orders/datatable', [OrderController::class, 'datatable'])->name('orders.datatable');
     Route::get('/orders/{order}/datatable', [OrderController::class, 'orderProductsDatatable'])->name('order-products.datatable');
     Route::get('/marketing/coupons/datatable', [CouponController::class, 'datatable'])->name('coupons.datatable');
+    Route::get('/products/flavors/datatable', [ProductController::class, 'flavorsDatatable'])->name('products.flavors.datatable');
 
 
     // Recursos con acceso autenticado
@@ -67,8 +68,11 @@ Route::middleware([
     });
 
     // Variaciones
-    Route::get('product-attributes', [ProductController::class, 'attributes'])->name('product-attributes');
-    Route::post('product-attributes', [ProductController::class, 'storeAttributes'])->name('product-attributes.store');
+    Route::get('product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
+    Route::post('product-flavors', [ProductController::class, 'storeFlavors'])->name('product-flavors.store');
+    Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
+    Route::delete('product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
+    Route::put('flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');
 
     // CRM, Contabilidad y Otros
     Route::get('crm', [CrmController::class, 'index'])->name('crm');
@@ -84,6 +88,9 @@ Route::middleware([
     // Cupones
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
     Route::get('coupons/{id}', [CouponController::class, 'show'])->name('coupons.show');
+    // Sabores
+    Route::get('/flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
+    Route::put('/flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
 
 });
 
