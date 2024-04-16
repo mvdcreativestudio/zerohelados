@@ -4,12 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\{
-    LanguageController, RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
+    RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
     ClientController, AccountingController, StoreController, RoleController, SupplierController, SupplierOrderController,
     ProductController, ProductCategoryController, OrderController, CartController, CheckoutController, MercadoPagoController, CouponController};
 
-// Cambio de Idioma
-Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
 // Autenticación y Verificación de Email
 Route::middleware([

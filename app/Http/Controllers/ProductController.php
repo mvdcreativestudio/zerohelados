@@ -99,6 +99,30 @@ class ProductController extends Controller
           ->make(true);
   }
 
+  public function edit($id)
+  {
+    $product = Product::with('categories', 'flavors')->findOrFail($id);
+    $categories = ProductCategory::all();
+    $stores = Store::all();
+    $flavors = Flavor::all();
+    return view('content.e-commerce.backoffice.products.edit-product', compact('product', 'stores', 'categories', 'flavors'));
+  }
+
+
+  public function update(Request $request, $id)
+  {
+    $product = Product::findOrFail($id);
+    $product->update($request->all());
+
+    // Sincroniza las categorías y sabores como en el método store
+    $product->categories()->sync($request->input('categories', []));
+    if ($request->filled('flavors')) {
+        $product->flavors()->sync($request->flavors);
+    }
+
+    return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
+  }
+
   public function switchStatus()
   {
       $product = Product::findOrFail(request('id'));
