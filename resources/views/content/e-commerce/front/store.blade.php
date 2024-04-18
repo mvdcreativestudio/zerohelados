@@ -64,16 +64,23 @@ Swal.fire({
 
 
 <!-- Categories -->
-<div class="row mt-4">
-  @foreach ($categories as $category)
-    <div class="card card-category col-md-3 col-6">
-      <img src="{{ asset($category->image_url) }}">
-      <div class="category-card-text">
-        <h5 class="category-name light">{{ $category->name }}</h5>
-      </div>
+<div class="mt-4">
+  <div class="row row-cols-1 row-cols-md-4 g-">
+    @foreach ($categories as $category)
+    <div class="col mb-4">
+      <a href="#{{ $category->slug }}" class="text-decoration-none">
+        <div class="card card-category">
+          <img src="{{ asset($category->image_url) }}">
+          <div class="category-card-text">
+            <h5 class="category-name light">{{ $category->name }}</h5>
+          </div>
+        </div>
+      </a>
     </div>
-  @endforeach
+    @endforeach
+  </div>
 </div>
+
 
 
   <!-- End Categories -->
@@ -81,7 +88,7 @@ Swal.fire({
   <!-- Categories and Products -->
   @foreach($categories as $category)
     @if($category->products->isNotEmpty())
-      <div class="category-section mt-5">
+      <div id="{{ $category->slug }}" class="category-section mt-5">
         <h2 class="store-category-title bold text-center mb-5">{{ $category->name }}</h2>
         <div class="products-container">
           <div class="row">
@@ -89,7 +96,7 @@ Swal.fire({
               <div class="col-md-2 col-6" data-bs-toggle="modal" data-bs-target="#modalCenter"
                   data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-img="{{ $product->image }}" data-price="{{ $product->price }}" data-max-flavors="{{$product->max_flavors}}">
                 <div class="card card-product">
-                  <img src="{{ asset($product->image) }}" alt="Product">
+                  <img src="{{ asset($product->image) }}" class="shop-product-image" alt="Product">
                   <div class="product-card-text">
                     <h5 class="product-name light">{{ $product->name }}</h5>
                     <div class="d-flex justify-content-center">
@@ -120,7 +127,15 @@ Swal.fire({
   <div class="col-lg-3 col-md-6">
     <div class="mt-3 cart-box">
       <img class="cart-box-img" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd" src="{{ asset('assets/img/ecommerce/cart-icon.png') }}" alt="Cart">
+      @if (session('cart'))
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+            {{ count(session('cart')) }}
+            <span class="visually-hidden">productos en el carrito</span>
+        </span>
+      @endif
+
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
+
         <div class="offcanvas-header">
           <h5 id="offcanvasEndLabel" class="offcanvas-title">Carrito</h5>
         </div>
@@ -140,14 +155,16 @@ Swal.fire({
                                 @endif
                             </div>
                             @if(isset($details['flavors']) && is_array($details['flavors']) && count($details['flavors']) > 0)
-                            <div class="cart-flavors">
-                                @foreach($details['flavors'] as $flavor)
-                                    <p class="text-muted m-0 p-0">{{ $flavor }}</p>
-                                @endforeach
-                            </div>
-                        @endif
-
-
+                              <div class="cart-flavors">
+                                  @foreach($details['flavors'] as $flavorId => $flavorDetails)
+                                  @if($flavorDetails['quantity'] > 1)
+                                    <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }} (x{{ $flavorDetails['quantity'] }})</p>
+                                  @else
+                                    <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }}</p>
+                                  @endif
+                                  @endforeach
+                              </div>
+                            @endif
                             @if ($details['price'] == null)
                                 <p class="product-price">${{ $details['old_price'] * $details['quantity'] }}</p>
                             @else

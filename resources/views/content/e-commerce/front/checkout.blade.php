@@ -83,7 +83,7 @@ $configData = Helper::appClasses();
                   <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioVisa">
                     <input name="payment_method" class="form-check-input" type="radio" value="card" id="customRadioVisa" checked />
                     <span class="custom-option-body">
-                      <img src="{{asset('assets/img/icons/payments/visa-'.$configData['style'].'.png') }}" alt="visa-card" width="58" data-app-light-img="icons/payments/visa-light.png" data-app-dark-img="icons/payments/visa-dark.png">
+                      <img src="{{ asset('assets/img/icons/payments/mercadopago.png') }}" alt="paypal" width="58">
                       <span class="ms-3">Mercado Pago</span>
                     </span>
                   </label>
@@ -108,8 +108,8 @@ $configData = Helper::appClasses();
                       <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioPedidosYa">
                           <input name="shipping_method" class="form-check-input" type="radio" value="peya" id="customRadioPedidosYa" checked />
                           <span class="custom-option-body">
-                              <img src="{{ asset('assets/img/icons/payments/visa-'.$configData['style'].'.png') }}" alt="visa-card" width="58" data-app-light-img="icons/payments/visa-light.png" data-app-dark-img="icons/payments/visa-dark.png">
-                              <span class="ms-3">Pedidos Ya</span>
+                            <img src="{{ asset('assets/img/icons/payments/peya.png') }}" alt="paypal" width="58">
+                            <span class="ms-3">Pedidos Ya</span>
                           </span>
                       </label>
                   </div>
@@ -119,7 +119,7 @@ $configData = Helper::appClasses();
                       <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioRetiroLocal">
                           <input name="shipping_method" class="form-check-input" type="radio" value="pickup" id="customRadioRetiroLocal" />
                           <span class="custom-option-body">
-                              <img src="{{ asset('assets/img/icons/payments/cash.png') }}" alt="paypal" width="58">
+                              <img src="{{ asset('assets/img/icons/payments/pickup.png') }}" alt="paypal" width="58">
                               <span class="ms-3">Retiro en el local</span>
                           </span>
                       </label>
@@ -130,11 +130,11 @@ $configData = Helper::appClasses();
               <div class="row">
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="name">Nombre</label>
-                  <input type="text" id="name" name="name" class="form-control" placeholder="John" />
+                  <input type="text" id="name" name="name" class="form-control" placeholder="Introduzca su nombre" />
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="lastname">Apellido</label>
-                  <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Doe" />
+                  <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Introduzca su apellido" />
                 </div>
 
                 <div class="col-12 mt-3">
@@ -144,7 +144,7 @@ $configData = Helper::appClasses();
 
                 <div class="col-12 col-md-6 mt-3">
                   <label class="form-label" for="phone">Teléfono</label>
-                  <input type="text" id="phone" name="phone" class="form-control" placeholder="099 112 223" />
+                  <input type="text" id="phone" name="phone" class="form-control" placeholder="Introduzca su teléfono" />
                 </div>
                 <div class="col-12 col-md-6 mt-3">
                   <label class="form-label" for="email">Correo Electrónico</label>
@@ -163,30 +163,38 @@ $configData = Helper::appClasses();
                     <li class="list-group-item p-4">
                       <div class="d-flex gap-3">
                         <div class="flex-shrink-0 d-flex align-items-center">
-                          <img src="{{ asset($details['image']) }}" alt="{{ $details['name'] }}" class="w-px-100">
+                          <img src="{{ asset($details['image']) }}" alt="{{ $details['name'] }}" class="w-px-100 shop-product-image">
                         </div>
                         <div class="flex-grow-1">
                           <div class="row">
                             <div class="col-md-8">
-                              <p class=" mb-0"><a href="javascript:void(0)" class="text-body">{{ $details['name'] }}</a></p>
+                              <p class=" mb-0 bold"><a href="javascript:void(0)" class="text-body">{{ $details['name'] }}</a></p>
                               @if (!empty($details['flavors']))
                               <small class="mt-0">
-                                @foreach($details['flavors'] as $flavor)
-                                  <p class="text-muted m-0 p-0">{{ $flavor }}</p>
+                                @foreach($details['flavors'] as $flavorId => $flavorDetails)
+                                @if($flavorDetails['quantity'] > 1)
+                                  <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }} (x{{ $flavorDetails['quantity'] }})</p>
+                                @else
+                                  <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }}</p>
+                                @endif
                                 @endforeach
 
                               </small>
                               @endif
-                              <input type="number" class="form-control form-control-sm w-px-100 mt-2" value="{{ $details['quantity'] }}" min="1" max="5">
+                              @if($details['quantity'] == 1)
+                                <p class=" mb-0"><a href="javascript:void(0)" class="text-body">{{ $details['quantity'] }} unidad</a></p>
+                              @else
+                                <p class=" mb-0"><a href="javascript:void(0)" class="text-body">{{ $details['quantity'] }} unidades</a></p>
+                              @endif
                             </div>
                             <div class="col-md-4">
                               <div class="text-md-end">
                                 <div class="my-2 my-md-4 mb-md-5">
-                                  @if ($details['price'])
+                                  @if ($details['price'] != $details['old_price'])
                                     <s class="text-muted">${{ $details['old_price'] }}</s>
-                                    <span class="text-primary"> {{ $settings->currency_symbol }}{{ $details['price'] }}</span>
+                                    <span class="text-primary bold"> {{ $settings->currency_symbol }}{{ $details['price'] }}</span>
                                   @else
-                                    <span class="text-primary">{{ $settings->currency_symbol }}{{ $details['old_price'] }}</span>
+                                    <span class="text-primary bold">{{ $settings->currency_symbol }}{{ $details['price'] }}</span>
                                   @endif
                                 </div>
                               </div>
@@ -246,9 +254,4 @@ $configData = Helper::appClasses();
   </div>
 </section>
 
-
-
-<!-- Modal -->
-@include('_partials/_modals/modal-pricing')
-<!-- /Modal -->
 @endsection

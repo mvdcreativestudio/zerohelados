@@ -15,21 +15,23 @@ class OrderRepository
         return Order::all();
     }
 
-    public function createOrder(array $clientData, array $orderData, array $cart)
+    public function createOrder(array $clientData, array $orderData)
     {
         DB::beginTransaction();
         try {
             $client = Client::firstOrCreate(['email' => $clientData['email']], $clientData);
             $order = new Order($orderData);
             $order->client()->associate($client);
+
+            // Guardar la orden primero para obtener su ID
             $order->save();
 
-            foreach ($cart as $item) {
-                $order->products()->attach($item['id'], [
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'] ?? $item['old_price'],
-                ]);
-            }
+            // Decodificar el JSON de productos antes de insertarlo en el campo 'products' de la tabla 'orders'
+            $products = json_decode($orderData['products'], true);
+            $order->products = $products;
+
+            // Guardar nuevamente para actualizar el campo 'products'
+            $order->save();
 
             DB::commit();
             return $order;

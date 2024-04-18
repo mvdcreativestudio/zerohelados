@@ -49,44 +49,42 @@ $configData = Helper::appClasses();
           <!-- Confirmation items -->
           <div class="col-xl-7 mb-3 mb-xl-0">
             <ul class="list-group">
-              @foreach($order->products as $product)
-              <li class="list-group-item p-4">
-                  <div class="d-flex gap-3">
-                      <div class="flex-shrink-0">
-                          <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-px-100">
-                      </div>
-                      <div class="flex-grow-1">
-                          <div class="row">
-                              <div class="col-md-8">
-                                  <a href="javascript:void(0)" class="text-body">
-                                      <h6 class="mb-0">{{ $product->name }}</h6>
-                                  </a>
-                                  @if($product->flavors->count() > 0)
-                                  <small class="mt-0">
-
-                                    @foreach($product->flavors as $flavor)
-                                      {{ $flavor->name }}
-                                    @endforeach
-
-                                  </small>
-                                  @endif
-                                  <p>Cantidad: {{ $product->pivot->quantity }}</p>
-                              </div>
-                              <div class="col-md-4">
-                                  <div class="text-md-end">
-                                      <div class="my-2 my-lg-4">
-                                          @if($product->old_price)
-                                          <s class="text-muted">${{ $product->old_price }}</s>
-                                          @endif
-                                          <span class="text-primary">${{ $product->pivot->price }}</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </li>
+              @foreach(json_decode($order->products, true) as $product)
+                <li class="list-group-item p-4">
+                    <div class="d-flex gap-3">
+                        <div class="flex-shrink-0">
+                            <img src="{{ asset($product['image'] ?? '') }}" alt="{{ $product['name'] ?? '' }}" class="w-px-100">
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <a href="javascript:void(0)" class="text-body">
+                                        <h6 class="mb-0">{{ $product['name'] ?? '' }}</h6>
+                                    </a>
+                                    @if(isset($product['flavors']) && is_array($product['flavors']))
+                                      <small class="mt-0">
+                                          {{ implode(', ', $product['flavors']) }}
+                                      </small>
+                                    @endif
+                                  <p>Cantidad: {{ $product['quantity'] ?? '' }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-md-end">
+                                        <div class="my-2 my-lg-4">
+                                            @if(isset($product['old_price']))
+                                                <s class="text-muted">${{ $product['old_price'] }}</s>
+                                            @endif
+                                            <span class="text-primary">${{ $product['price'] ?? '' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
               @endforeach
+
+
             </ul>
         </div>
 

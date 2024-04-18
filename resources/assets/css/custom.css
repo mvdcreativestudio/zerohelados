@@ -246,6 +246,11 @@
   width: 60%;
 }
 
+.shop-product-image {
+  border-radius: 20px;
+  aspect-ratio: 1/1;
+}
+
 /* Checkout */
 
 .sabores-carrito {
@@ -442,6 +447,7 @@ tr.odd {
   text-align: center;
   z-index: 10; /* Asegura que el texto esté sobre el video */
 }
+
 
 .header-title-store {
   font-size: 2em;

@@ -68,100 +68,91 @@ class CheckoutController extends Controller
   public function success($orderId)
   {
       // Cargar la orden con productos y sabores relacionados
-      $order = Order::with(['products.flavors'])->findOrFail($orderId);
+      $order = Order::findOrFail($orderId);
       return view('content.e-commerce.front.checkout-success', compact('order'));
   }
 
 
 
   public function store(Request $request)
-{
+  {
       try {
-        // Obtener el ID de la tienda de la sesión
-        $storeId = session('store.id');
 
-        // Validación de los datos recibidos
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'lastname' => 'required|max:255',
-            'address' => 'required',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'payment_method' => 'required',
-            'shipping_method' => 'required',
-        ]);
+          $storeId = session('store.id');
 
-        // Preparar datos del cliente
-        $clientData = [
-            'name' => $validatedData['name'],
-            'lastname' => $validatedData['lastname'],
-            'type' => 'individual',
-            'state' => 'Montevideo',
-            'city' => 'Montevideo',
-            'country' => 'Uruguay',
-            'address' => $validatedData['address'],
-            'phone' => $validatedData['phone'],
-            'email' => $validatedData['email'],
-        ];
+          // Validación de los datos recibidos
+          $validatedData = $request->validate([
+              'name' => 'required|max:255',
+              'lastname' => 'required|max:255',
+              'address' => 'required',
+              'phone' => 'required',
+              'email' => 'required|email',
+              'payment_method' => 'required',
+              'shipping_method' => 'required',
+          ]);
 
-        // Preparar datos de la orden
-        $subtotal = 0;
-        $cartItems = session('cart', []);
-        if (!is_array($cartItems)) {
-            $cartItems = [];
-        }
+          // Preparar datos del cliente
+          $clientData = [
+              'name' => $validatedData['name'],
+              'lastname' => $validatedData['lastname'],
+              'type' => 'individual',
+              'state' => 'Montevideo',
+              'city' => 'Montevideo',
+              'country' => 'Uruguay',
+              'address' => $validatedData['address'],
+              'phone' => $validatedData['phone'],
+              'email' => $validatedData['email'],
+          ];
 
-        // Inicializar un array para almacenar los sabores de los productos en la orden
-        $flavorsData = [];
+          // Preparar datos de la orden
+          $subtotal = 0;
+          $cartItems = session('cart', []);
+          $products = [];
 
-        foreach ($cartItems as $item) {
-            $price = $item['price'] ?? $item['old_price'];
-            $subtotal += $price * ($item['quantity'] ?? 1);
+          foreach ($cartItems as $item) {
+              $price = $item['price'] ?? $item['old_price'];
+              $subtotal += $price * $item['quantity'];
 
-            // Obtener los sabores seleccionados para este producto
-            $flavors = $item['flavors'] ?? [];
+              $flavors = [];
+              if (!empty($item['flavors'])) {
+                  foreach ($item['flavors'] as $flavorId => $flavorInfo) {
+                      $flavors[] = $flavorInfo['name'] . ' (' . $flavorInfo['quantity'] . 'x)';
+                  }
+              }
 
-            // Asociar los sabores seleccionados con este producto
-            foreach ($flavors as $flavorId => $flavorName) {
-                $flavorsData[] = [
-                    'product_id' => $item['id'],
-                    'flavor_id' => $flavorId,
-                ];
-            }
-        }
+              $products[] = [
+                  'name' => $item['name'],
+                  'price' => $price,
+                  'quantity' => $item['quantity'],
+                  'flavors' => implode(', ', $flavors),
+              ];
+          }
 
-        // Calcular el costo de envío y el total de la orden
-        $costoEnvio = session('costoEnvio', 60); // Costo de envío predeterminado si no se ha establecido en la sesión
-        $total = $subtotal + $costoEnvio;
+          $costoEnvio = 60; // Define costos de envío predeterminados
+          $total = $subtotal + $costoEnvio;
 
-        // Preparar datos de la orden
-        $orderData = [
-            'date' => now(),
-            'time' => now()->format('H:i:s'),
-            'origin' => 'ecommerce',
-            'store_id' => $storeId,
-            'subtotal' => $subtotal,
-            'tax' => 0,
-            'shipping' => $costoEnvio,
-            'total' => $total,
-            'payment_status' => 'pending',
-            'shipping_status' => 'pending',
-            'payment_method' => $validatedData['payment_method'],
-            'shipping_method' => $validatedData['shipping_method'],
-        ];
+          $orderData = [
+              'date' => now(),
+              'time' => now()->format('H:i:s'),
+              'origin' => 'ecommerce',
+              'store_id' => session('store.id', 1), // Default to store ID 1 if not set in session
+              'subtotal' => $subtotal,
+              'tax' => 0,
+              'shipping' => $costoEnvio,
+              'total' => $total,
+              'payment_status' => 'pending',
+              'shipping_status' => 'pending',
+              'payment_method' => $validatedData['payment_method'],
+              'shipping_method' => $validatedData['shipping_method'],
+              'products' => json_encode($products),
+          ];
 
-        // Guardar la orden y los datos del cliente
-        DB::beginTransaction();
-        $order = $this->orderRepository->createOrder($clientData, $orderData, $cartItems);
+          // Guardar la orden y los datos del cliente
+          DB::beginTransaction();
+          $order = $this->orderRepository->createOrder($clientData, $orderData);
+          DB::commit();
 
-        // Guardar los sabores de los productos en la orden
-        foreach ($flavorsData as $flavor) {
-            $order->products()->attach($flavor['product_id'], ['flavor_id' => $flavor['flavor_id']]);
-        }
-
-        DB::commit();
-
-        Log::info('Orden creada:', $order->toArray());
+          Log::info('Orden creada:', ['order_id' => $order->id, 'order_data' => $orderData]);
 
         if ($validatedData['payment_method'] === 'card') {
             // Lógica para MercadoPago
