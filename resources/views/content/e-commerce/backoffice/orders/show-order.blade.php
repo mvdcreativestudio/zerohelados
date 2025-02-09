@@ -103,7 +103,7 @@ $changeTypeTranslations = [
     <h6 class="card-title mb-1 mt-1">Método de pago:
       @if($order->payment_method === 'card')
         <span class="badge bg-label-primary me-2 ms-2">MercadoPago</span>
-      @elseif($order->payment_method === 'cash')
+      @elseif($order->payment_method === 'cash' || $order->payment_method === 'efectivo')
         <span class="me-2 ms-2">Efectivo</span>
       @elseif($order->payment_method === 'debit')
         <span class="me-2 ms-2">Débito</span>
