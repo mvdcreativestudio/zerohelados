@@ -30,7 +30,7 @@
   </video>
   <div class="video-overlay">
     <h2 class="header-title">Llegaste al paraíso del helado</h2>
-    <img src="assets/img/branding/chelato-white.png" class="logo-header" alt="">
+    <img src="{{ asset('assets/img/branding/logo-white.png') }}" class="logo-header" alt="Logo Zero Helados">
     <div class="animated-text-container">
       <a class="animated-text" href="#selectStore">Pedí Online <i class="fa fa-arrow-down arrow-animate"></i></a>
     </div>
@@ -102,14 +102,17 @@
   </div>
   @endif
 
-  {{-- <div class="container-fluid mt-3">
+  <div class="container-fluid mt-3">
     <div class="row align-items-center">
       <div class="col-lg-6 col-md-12 text-center quienes-somos-container mb-3 mb-lg-0">
         <h2>¿Quiénes somos?</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor, orci eu lacinia rutrum, mauris metus malesuada neque, a maximus erat turpis quis dolor. In efficitur iaculis feugiat. Sed eget facilisis justo, vel auctor lacus. Donec in velit non orci facilisis aliquet at sed ante. Cras elementum ipsum metus, nec porta lectus porta sit amet. Nunc et tristique arcu, vel tempor neque. Proin placerat, lacus ut consequat vestibulum, lorem ex.</p>
+        <p>Zero Helados surge como una opción distinta, llega para satisfacer a los diferentes que cada vez son más! <br>
+          El objetivo es poder hacer que estas personas distintas disfruten también de un rico y buen helado. Nos referimos a aquellas personas que por distintos motivos tienen alguna intolerancia a ciertos ingredientes que su cuerpo no admite, como por ejemplo diabéticos, celiacos, intolerantes a los lácteos, entre otros. Zero es la solución! La composición de nuestros sabores se caracteriza por cumplir con las siguientes características: es sin azúcar, sin lácteos y no contiene gluten ni T.A.C.C.! <br>
+          Cumplimos de esta forma con aquellas personas que mencionamos, pero además con aquellas que quieren experimentar en sus vidas el cambio de hábito y dejar de consumir esos tipos de insumos. Esas personas como las apasionadas por cuidar su salud física, su silueta y/o también porque se orientaron a distintas dietas como por ejemplo las veganas o libres de gluten. Incluso que nuestros productos sean de bajas calorías y carbohidratos, y por ende bajos en grasas son muy recomendados por nutricionistas, entrenadores y preparadores físicos. <br>
+          Solo resta expresar que el único secreto que guardamos es el trabajo a conciencia que realizamos, respetando la calidad de los materiales a utilizar y la precisión de los procesos mediante los cuales una determinada cantidad de componentes se convierten gracias a los buenos oficios de nuestros Maestros.</p>
       </div>
       <div class="col-lg-6 col-md-12 p-5 text-end homepage-img-container">
-        <img class="img-fluid homepage-quienes-somos-img" src="{{ asset('assets/img/front-pages/homepage/img-01.svg') }}" alt="">
+        <img class="img-fluid homepage-quienes-somos-img" src="{{ asset('assets/img/front-pages/homepage/img-01.jpg') }}" alt="">
       </div>
     </div>
   </div>
@@ -117,26 +120,16 @@
   <div class="container-fluid">
     <div class="row align-items-center my-5">
       <div class="col-lg-6 col-md-12 p-5 text-center mb-3 mb-lg-0">
-        <img class="img-fluid homepage-servicios-img" src="{{ asset('assets/img/front-pages/homepage/eventos-1.jpg') }}" alt="">
+        <img class="img-fluid homepage-servicios-img" src="{{ asset('assets/img/front-pages/homepage/img-02.jpg') }}" alt="">
       </div>
       <div class="col-lg-6 col-md-12 text-center servicios-container">
-        <h2>Servicios</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor, orci eu lacinia rutrum, mauris metus malesuada neque, a maximus erat turpis quis dolor. In efficitur iaculis feugiat. Sed eget facilisis justo, vel auctor lacus. Donec in velit non orci facilisis aliquet at sed ante. Cras elementum ipsum metus, nec porta lectus porta sit amet. Nunc et tristique arcu, vel tempor neque. Proin placerat, lacus ut consequat vestibulum, lorem ex.</p>
+        <h2>Igual de ricos, pero sin azúcar</h2>
+        <p>Hemos creado el imposible, un helado a base de agua sin  lactosa y 0% azúcar, pero te aseguramos que no te vas a dar cuenta.
+        <br>También tenemos una filosofía de Zero Waste por lo que somos la primer heladería de Uruguay en ser 100% compostable en nuestro packaging.
+        </p>
       </div>
     </div>
   </div>
-
-  <div class="container-fluid">
-    <div class="row align-items-center">
-      <div class="col-lg-6 col-md-12 text-center quienes-somos-container mb-3 mb-lg-0">
-        <h2>Empresas</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor, orci eu lacinia rutrum, mauris metus malesuada neque, a maximus erat turpis quis dolor. In efficitur iaculis feugiat. Sed eget facilisis justo, vel auctor lacus. Donec in velit non orci facilisis aliquet at sed ante. Cras elementum ipsum metus, nec porta lectus porta sit amet. Nunc et tristique arcu, vel tempor neque. Proin placerat, lacus ut consequat vestibulum, lorem ex.</p>
-      </div>
-      <div class="col-lg-6 col-md-12 p-5 text-end homepage-img-container">
-        <img class="img-fluid homepage-quienes-somos-img" src="{{ asset('assets/img/front-pages/homepage/locales-1.jpg') }}" alt="">
-      </div>
-    </div>
-  </div> --}}
 
 
 

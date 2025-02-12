@@ -68,7 +68,7 @@
   @endif
 
   <div class="container vh-100">
-    <!-- Categories -->
+    {{-- <!-- Categories -->
     <div class="mt-4">
       <div class="row row-cols-1 row-cols-md-4 g-">
         @foreach ($categories as $category)
@@ -85,7 +85,7 @@
         @endforeach
       </div>
     </div>
-    <!-- End Categories -->
+    <!-- End Categories --> --}}
 
     <!-- Categories and Products -->
     @foreach($categories as $category)
