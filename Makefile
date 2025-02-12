@@ -107,12 +107,12 @@ SUPERVISOR_CONF_DIR = /etc/supervisord.d
 SUPERVISOR_CMD = sudo supervisorctl
 PROJECT_NAME = zerohelados
 PROJECT_CONF = $(SUPERVISOR_CONF_DIR)/$(PROJECT_NAME).conf
-WORKER_LOG = /home/chelatouy/public_html/storage/logs/worker.log
+WORKER_LOG = /home/zero/public_html/storage/logs/worker.log
 
 # Crear un archivo de configuración para Supervisor
 create-conf:
 	@echo "Creando configuración para Supervisor..."
-	@sudo bash -c "printf '[program:$(PROJECT_NAME)-worker]\nprocess_name=%(program_name)s_%(process_num)02d\ncommand=php /home/chelatouy/public_html/artisan queue:work --sleep=3 --tries=3 --timeout=3600\nautostart=true\nautorestart=true\nuser=chelatouy\nnumprocs=1\nredirect_stderr=true\nstdout_logfile=$(WORKER_LOG)\nstopwaitsecs=3600\n' > $(PROJECT_CONF)"
+	@sudo bash -c "printf '[program:$(PROJECT_NAME)-worker]\nprocess_name=%(program_name)s_%(process_num)02d\ncommand=php /home/zero/public_html/artisan queue:work --sleep=3 --tries=3 --timeout=3600\nautostart=true\nautorestart=true\nuser=chelatouy\nnumprocs=1\nredirect_stderr=true\nstdout_logfile=$(WORKER_LOG)\nstopwaitsecs=3600\n' > $(PROJECT_CONF)"
 
 # Recargar configuraciones en Supervisor
 reload-supervisor:
