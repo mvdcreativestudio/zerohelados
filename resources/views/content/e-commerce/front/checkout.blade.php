@@ -228,13 +228,14 @@
                             <div class="col-md-4">
                               <div class="text-md-end">
                                 <div class="my-2 my-md-4 mb-md-5">
-                                  @if ($details['price'] != $details['old_price'])
+                                  @if (isset($details['old_price']) && $details['price'] != $details['old_price'])
                                     <s class="text-muted">${{ $details['old_price'] }}</s>
                                     <span class="text-primary bold"> {{ $settings->currency_symbol }}{{ $details['price'] }}</span>
                                   @else
                                     <span class="text-primary bold">{{ $settings->currency_symbol }}{{ $details['price'] }}</span>
                                   @endif
                                 </div>
+
                               </div>
                             </div>
                           </div>
