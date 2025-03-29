@@ -32,7 +32,7 @@ class MercadoPagoService
     public function __construct()
     {
       // Cargar la secret key desde la configuración
-      $this->secretKey = '80cd3dd7852a56bd241b7e2ec7db21ca09a92927ddc6eb928a05da4d5f2d0731';
+      $this->secretKey = '4bb8a460c15a6bc54919c4195bca8a746bcea2a5c21eac424a999c981ae7795d';
       $this->client = new Client();
 
       // Configurar el acceso a la API de MercadoPago
@@ -94,7 +94,7 @@ class MercadoPagoService
       $preference->auto_return = "all";
 
       // URL para las notificaciones webhooks
-      $preference->notification_url = 'https://chelato.com.uy/api/mpagohook';
+      $preference->notification_url = 'https://zerohelados.com.uy/api/mpagohook';
 
       $preference->external_reference = $order->id;
 

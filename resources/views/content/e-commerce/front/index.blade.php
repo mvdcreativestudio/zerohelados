@@ -26,7 +26,7 @@
 
 <div class="video-container">
   <video autoplay muted loop id="myVideo" class="video-background">
-      <source src="assets/img/videos/back-chelato.mp4" type="video/mp4">
+      <source src="assets/img/videos/back-zero.mp4" type="video/mp4">
   </video>
   <div class="video-overlay">
     <h2 class="header-title">Llegaste al paraíso del helado</h2>

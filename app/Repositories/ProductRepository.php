@@ -31,11 +31,11 @@ class ProductRepository
   {
     // Verificar si el usuario tiene permiso para ver todas las categorías
     if (Auth::user()->can('access_global_products')) {
-        $categories = ProductCategory::all();
         $stores = Store::all();
+        $categories = ProductCategory::all();
     } else {
         // Si no tiene el permiso, mostrar solo las categorías y tiendas asociadas a su tienda
-        $categories = ProductCategory::where('store_id', Auth::user()->store_id)->get();
+        $categories = ProductCategory::all();
         $stores = Store::where('id', Auth::user()->store_id)->get();
     }
 
@@ -223,13 +223,8 @@ class ProductRepository
     $flavors = Flavor::all();
     $rawMaterials = RawMaterial::all();
 
-    // Verificar si el usuario tiene permiso para ver todas las categorías
-    if (Auth::user()->can('access_global_products')) {
-        $categories = ProductCategory::all();
-    } else {
-        // Si no tiene el permiso, mostrar solo las categorías asociadas a su tienda
-        $categories = ProductCategory::where('store_id', Auth::user()->store_id)->get();
-    }
+    // Si no tiene el permiso, mostrar solo las categorías asociadas a su tienda
+    $categories = ProductCategory::all();
 
     return compact('product', 'stores', 'categories', 'flavors', 'rawMaterials');
   }

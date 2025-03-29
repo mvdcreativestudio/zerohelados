@@ -18,11 +18,7 @@ class ProductCategoryRepository
   */
   public function index(): Collection
   {
-    if(auth()->user()->can('access_global_products')){
-      return ProductCategory::all(); // Devuelve una colección
-    }else{
-      return ProductCategory::where('store_id', auth()->user()->store_id)->get(); // Devuelve una colección
-    }
+      return ProductCategory::all();
   }
 
   /**
@@ -181,10 +177,6 @@ class ProductCategoryRepository
       $query = ProductCategory::withCount('products') // products_count será agregado automáticamente
           ->withSum('products', 'stock'); // Esto agrega la suma del stock de los productos relacionados
 
-      // Aplica permisos y búsqueda como antes...
-      if (!auth()->user()->can('access_global_products')) {
-          $query->where('store_id', auth()->user()->store_id);
-      }
 
       if ($request->has('search') && !empty($request->input('search'))) {
           $query->where('name', 'like', '%' . $request->input('search') . '%');
@@ -212,19 +204,11 @@ class ProductCategoryRepository
    */
   public function getCategories(): array
   {
-      // Verificar si el usuario tiene el permiso de acceso global a los productos
-      if (auth()->user()->can('access_global_products')) {
-          // Si el usuario tiene permiso, obtener todas las categorías
-          $categories = ProductCategory::withCount('products') // Obtener conteo de productos
-              ->withSum('products', 'stock') // Obtener la suma del stock
-              ->get();
-      } else {
-          // Si el usuario no tiene permiso, obtener solo las categorías de su tienda
-          $categories = ProductCategory::where('store_id', auth()->user()->store_id)
-              ->withCount('products') // Obtener conteo de productos
-              ->withSum('products', 'stock') // Obtener la suma del stock
-              ->get();
-      }
+      // Si el usuario tiene permiso, obtener todas las categorías
+      $categories = ProductCategory::withCount('products') // Obtener conteo de productos
+          ->withSum('products', 'stock') // Obtener la suma del stock
+          ->get();
+
 
       // Mapear las categorías a un formato más manejable
       $mappedCategories = $categories->map(function ($category) {
