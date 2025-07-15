@@ -46,7 +46,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventStoreConfigurationController;
 
 // Ruta raíz redirige a la tienda (Shop)
-Route::get('/', [EcommerceController::class, 'index'])->name('shop');
+/** Route::get('/', [EcommerceController::class, 'index'])->name('shop'); */
+
+Route::get('/', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return app(\App\Http\Controllers\EcommerceController::class)->index();
+})->name('shop');
 
 // Redirigir /admin al login si no está autenticado
 Route::get('/admin', function () {

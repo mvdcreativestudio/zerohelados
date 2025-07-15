@@ -32,7 +32,7 @@ class MercadoPagoService
     public function __construct()
     {
       // Cargar la secret key desde la configuración
-      $this->secretKey = '4bb8a460c15a6bc54919c4195bca8a746bcea2a5c21eac424a999c981ae7795d';
+      $this->secretKey = 'ac75271bebfa94d0073b87320de1e891a47adfa754acbd50b807880705706201';
       $this->client = new Client();
 
       // Configurar el acceso a la API de MercadoPago
@@ -106,7 +106,13 @@ class MercadoPagoService
 
       // Guardar la preferencia y generar el log
       $preference->save();
-      Log::info('Preference created:', $preference->toArray());
+      Log::info('Preference created full dump', [
+          'url' => $preference->init_point,
+          'back_urls' => $preference->back_urls,
+          'notification_url' => $preference->notification_url,
+          'metadata' => $preference->metadata,
+          'external_reference' => $preference->external_reference,
+      ]);
 
       return $preference;
     }
@@ -167,5 +173,35 @@ class MercadoPagoService
             'access_token' => $accessToken
         ]);
     }
+
+    public function handleWebhookPayload(array $payload): void
+    {
+        Log::info('Webhook payload recibido en service', $payload);
+
+        $topic = $payload['topic'] ?? $payload['type'] ?? null;
+        $id = $payload['id'] ?? ($payload['data']['id'] ?? null);
+
+        if (!$topic || !$id) {
+            Log::error('Webhook sin topic o id válido', $payload);
+            return;
+        }
+
+        if ($topic === 'payment') {
+            $payment = \MercadoPago\Payment::find_by_id($id);
+            Log::info("Pago encontrado vía webhook", $payment->toArray());
+
+            // Podés actualizar la orden acá si querés
+            $orderId = $payment->metadata->order_id ?? null;
+            if ($orderId) {
+                $order = Order::find($orderId);
+                if ($order) {
+                    $order->status = 'paid';
+                    $order->save();
+                    Log::info("Orden $orderId marcada como pagada.");
+                }
+            }
+        }
+    }
+
 
 }

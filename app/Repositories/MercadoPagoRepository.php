@@ -45,32 +45,48 @@ class MercadoPagoRepository
    * @param MercadoPagoService $mpService
    * @return array
   */
-  public function handleWebhook(Request $request, MercadoPagoService $mpService): array
-  {
-    $xSignatureParts = explode(',', $request->header('x-signature'));
-    $xSignatureData = $this->parseXSignature($xSignatureParts);
-
-    $ts = $xSignatureData['ts'] ?? '';
-    $receivedHash = $xSignatureData['v1'] ?? '';
+public function handleWebhook(Request $request, MercadoPagoService $mpService): array
+{
     $payload = $request->all();
+
     $dataId = $payload['data']['id'] ?? null;
     $resourceUrl = $payload['resource'] ?? null;
     $id = $dataId ?: basename(parse_url($resourceUrl, PHP_URL_PATH));
     $topic = $payload['topic'] ?? $payload['type'] ?? null;
 
-    if ($id) {
-        if ($mpService->verifyHMAC($id, $request->header('x-request-id'), $ts, $receivedHash)) {
-            Log::info('La verificación HMAC pasó correctamente');
-            return $this->processNotification($topic, $id, $mpService);
-        } else {
-            Log::error('La verificación HMAC falló');
-            return ['message' => ['error' => 'HMAC verification failed'], 'status' => 400];
-        }
-    } else {
-        Log::error('El índice "data" o "resource" no está presente en los datos de la solicitud');
+    // DEBUG LOG
+    Log::info('Webhook recibido:', [
+        'headers' => $request->headers->all(),
+        'body' => $payload
+    ]);
+
+    // Si no hay ID, devolvemos error
+    if (!$id) {
         return ['message' => ['error' => 'Invalid request data'], 'status' => 400];
     }
-  }
+
+    // Si viene la cabecera x-signature, validamos HMAC
+    if ($request->hasHeader('x-signature')) {
+        $xSignatureParts = explode(',', $request->header('x-signature'));
+        $xSignatureData = $this->parseXSignature($xSignatureParts);
+        $ts = $xSignatureData['ts'] ?? '';
+        $receivedHash = $xSignatureData['v1'] ?? '';
+
+        if (!$mpService->verifyHMAC($id, $request->header('x-request-id'), $ts, $receivedHash)) {
+            Log::warning('HMAC fallido para webhook');
+            return ['message' => ['error' => 'HMAC verification failed'], 'status' => 400];
+        }
+
+        Log::info('HMAC verificado con éxito');
+    } else {
+        Log::info('Webhook recibido sin HMAC, asumiendo flujo de Checkout Pro');
+    }
+
+    // Procesamos la notificación
+    return $this->processNotification($topic, $id, $mpService);
+}
+    
+
 
   /**
    * Procesa las notificaciones según el tipo de evento.
@@ -207,13 +223,21 @@ class MercadoPagoRepository
    * @param array $xSignatureParts
    * @return array
   */
-  private function parseXSignature(array $xSignatureParts): array
-  {
-      $xSignatureData = [];
-      foreach ($xSignatureParts as $part) {
-          list($key, $value) = explode('=', $part);
-          $xSignatureData[trim($key)] = trim($value);
-      }
-      return $xSignatureData;
-  }
+    private function parseXSignature(array $xSignatureParts): array
+    {
+        $xSignatureData = [];
+
+        foreach ($xSignatureParts as $part) {
+            $keyValue = explode('=', $part, 2);
+
+            if (count($keyValue) === 2) {
+                $xSignatureData[trim($keyValue[0])] = trim($keyValue[1]);
+            } else {
+                Log::warning("🛑 Parte inválida en X-Signature: '$part'");
+            }
+        }
+
+        return $xSignatureData;
+    }
+
 }

@@ -36,20 +36,31 @@ class MercadoPagoController extends Controller
       $this->mpService = $mpService;
     }
 
-    /**
-     * Maneja las notificaciones webhook de MercadoPago.
-     *
-     * @param Request $request
-     * @return JsonResponse
-    */
+    
     public function webhooks(Request $request): JsonResponse
     {
-      Log::info('Datos recibidos de MercadoPago:', [
-          'headers' => $request->header(),
-          'body' => $request->all(),
-      ]);
+        try {
+            // 🔍 Logueamos todo el request (headers y body)
+            Log::info('🧩 Webhook recibido de MercadoPago', [
+                'headers' => $request->headers->all(),
+                'body'    => $request->all(),
+                'raw'     => $request->getContent(),
+            ]);
 
-      $result = $this->mercadopagorepo->handleWebhook($request, $this->mpService);
-      return response()->json($result['message'], $result['status']);
+            // 🔧 Ejecutamos la lógica del repo
+            $result = $this->mercadopagorepo->handleWebhook($request, $this->mpService);
+
+            Log::info('✅ Webhook procesado correctamente', $result);
+
+            return response()->json($result['message'], $result['status']);
+        } catch (\Throwable $e) {
+            // 🚨 Si falla algo, lo registramos completo
+            Log::error('💥 Error en webhook de MercadoPago: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'body'  => $request->all()
+            ]);
+
+            return response()->json(['error' => 'internal_error'], 500);
+        }
     }
 }

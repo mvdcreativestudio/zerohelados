@@ -553,7 +553,7 @@ document.getElementById('orderConfirm').addEventListener('click', async function
             store_id: storeId,
             referenceId: `Chelato_PeYa_REF-${Date.now()}`,
             items,
-            isTest: true,
+            isTest: false,
             notificationMail: document.getElementById('email').value || null,
             waypoints: [
                 {
